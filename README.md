@@ -9,7 +9,7 @@ A compact React component library for operational and ERP interfaces. The librar
 The initial public release is distributed as a versioned GitHub dependency:
 
 ```sh
-npm install github:errogaht/erp-ui-kit#v0.3.0
+npm install github:errogaht/erp-ui-kit#v0.4.0
 ```
 
 Import the package and its CSS once in the host app:
@@ -24,6 +24,8 @@ export function Example() {
 ```
 
 React and React DOM 19 are peer dependencies. The searchable combobox uses `react-select`. The host controls business state, localization, navigation, and data access. `UiComparison` accepts `beforeLabel` and `afterLabel` for localization.
+
+`UiAiChat` is a reusable AI assistant interface with conversation history, Markdown and code, file attachments, source links, streaming and message actions. [Try its interactive demo](https://errogaht.github.io/erp-ui-kit/#ai-chat) or read the [integration guide](docs/ai-chat.md). The host provides messages and handles AI requests; the package never calls a model or stores conversations.
 
 Native inputs and selects and both searchable comboboxes have the same regular and compact heights. `UiField` accepts a clickable `UiInfoTip` in its `help` prop. `UiCallout`, `UiEmptyState`, and `UiSectionHeading` provide reusable information layouts; see the [Information examples](https://errogaht.github.io/erp-ui-kit/#information).
 

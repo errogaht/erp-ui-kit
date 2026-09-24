@@ -13,6 +13,9 @@
     "UiDisclosure",
     "UiPopoverMenu"
   ],
+  "AI chat": [
+    "UiAiChat"
+  ],
   "Forms and actions": [
     "UiButton",
     "UiLinkButton",

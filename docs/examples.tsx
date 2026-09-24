@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
-  UiActionTile, UiAsidePanel, UiAsyncCombobox, UiAttachmentLink, UiAvatar,
+  UiActionTile, UiAiChat, UiAsidePanel, UiAsyncCombobox, UiAttachmentLink, UiAvatar,
   UiBadge, UiBootstrapIcon, UiButton, UiCard, UiCell, UiChangeList, UiChangeRow, UiChoice,
   UiCombobox, UiComparison, UiComposer, UiContainer, UiConversationCanvas,
   UiCallout, UiDialog, UiDisclosure, UiEmpty, UiEmptyState, UiFacts, UiField, UiFile, UiFormActionRow,
@@ -10,6 +10,7 @@ import {
   UiProgress, UiQuote, UiSegmented, UiSelect, UiSkeleton, UiSplit, UiStack,
   UiStatusLine, UiTable, UiTabs, UiTextarea, UiTimeline, UiValueCard,
 } from '../src'
+import type { UiAiChatConversation, UiAiChatMessage } from '../src'
 
 const teams = [{ value: 'north', label: 'North team' }, { value: 'west', label: 'West team' }]
 const illustration = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180" viewBox="0 0 320 180"><rect width="320" height="180" fill="#e5eff4"/><rect x="46" y="30" width="228" height="120" rx="3" fill="#fff" stroke="#b5c0c7"/><path d="M65 62h147M65 83h192M65 104h150" stroke="#a8bac3" stroke-width="7"/><circle cx="242" cy="58" r="14" fill="#9bbfaf"/></svg>')}`
@@ -41,6 +42,56 @@ export function ChatWorkspace() {
     <div className="catalog-chat__details"><div className="catalog-chat__column-title"><strong>Linked record</strong><UiBadge tone="warning">Open</UiBadge></div><UiPanel title="CASE-1042"><UiFacts items={[{label:'Owner',value:'North team'},{label:'Status',value:'Awaiting confirmation'},{label:'Priority',value:'Normal'}]}/></UiPanel><UiActionTile title="Open record" detail="View linked operational data" type="button"/><UiActionTile title="Add internal note" detail="Keep context with this conversation" type="button"/><UiLineItem title="Sample item" detail="SKU DEMO-1" quantity="2 units" amount="$48.00"/></div>
     <UiDialog open={imageOpen} title="Sample document preview" size="image" onClose={()=>setImageOpen(false)}><img alt="Generic document illustration" src={illustration}/></UiDialog>
   </div>
+}
+
+/** The demo simulates streaming locally so every callback can be inspected without an AI account. */
+export function AiChatExamples() {
+  const [conversations, setConversations] = useState<UiAiChatConversation[]>([
+    { id: 'sample', title: 'Weekly operations summary', updatedAt: 'Today', pinned: true },
+    { id: 'empty', title: 'Untitled conversation', updatedAt: 'Yesterday' },
+  ])
+  const [activeId, setActiveId] = useState('sample')
+  const [model, setModel] = useState('standard')
+  const [messagesByConversation, setMessagesByConversation] = useState<Record<string, UiAiChatMessage[]>>({
+    sample: [
+      { id: 'request', role: 'user', content: 'Summarize the sample report and show a small code example.', createdAt: '10:42', attachments: [{id:'report',name:'operations-report.csv',size:'24 KB'}] },
+      { id: 'answer', role: 'assistant', model: 'Standard', createdAt: '10:43', content: '## Weekly overview\n\n**12 records** were reviewed and **3** need follow-up. The table shows a fictional breakdown.\n\n| Team | Complete | Review |\n| --- | ---: | ---: |\n| North | 7 | 1 |\n| West | 5 | 2 |\n\nYou can map a list with a small function:\n\n```js\nconst pending = records.filter(item => item.status === "review")\n```\n\nCheck the linked guidance before acting.', sources: [{id:'guide',title:'Example process guide',url:'https://example.com/guide'}] },
+    ],
+    empty: [],
+  })
+  const [generating, setGenerating] = useState(false)
+  const timer = useRef<number | undefined>(undefined)
+  useEffect(() => () => window.clearInterval(timer.current), [])
+  const append = (conversationId: string, message: UiAiChatMessage) => setMessagesByConversation(previous => ({...previous,[conversationId]:[...(previous[conversationId] ?? []),message]}))
+  const simulateResponse = (conversationId: string) => {
+    window.clearInterval(timer.current)
+    const responseId = `response-${Date.now()}`
+    const chunks = ['I reviewed the sample request. ', 'Here is a concise answer with **clear next steps**. ', 'You can attach a document, edit your question, or ask a follow-up.']
+    let step = 0
+    setGenerating(true)
+    append(conversationId,{id:responseId,role:'assistant',content:'',model:model==='standard'?'Standard':'Fast',status:'streaming',createdAt:'Now'})
+    timer.current = window.setInterval(() => {
+      step += 1
+      setMessagesByConversation(previous => ({...previous,[conversationId]:(previous[conversationId] ?? []).map(message => message.id===responseId ? {...message,content:chunks.slice(0,step).join(''),status:step===chunks.length?'complete':'streaming'} : message)}))
+      if(step===chunks.length){window.clearInterval(timer.current);setGenerating(false)}
+    },600)
+  }
+  const stop = () => {window.clearInterval(timer.current);setGenerating(false);setMessagesByConversation(previous => ({...previous,[activeId]:(previous[activeId]??[]).map(message=>message.status==='streaming'?{...message,status:'complete'}:message)}))}
+  return <UiAiChat
+    title="Operations assistant" description="Explore the interface with local sample data. No message is sent to a server."
+    conversations={conversations} activeConversationId={activeId} messages={messagesByConversation[activeId] ?? []}
+    models={[{id:'standard',label:'Standard'},{id:'fast',label:'Fast'}]} selectedModelId={model} onModelChange={setModel}
+    suggestions={['Summarize this report','Write a status update','Explain this table','Draft a checklist']}
+    isGenerating={generating} onStop={stop}
+    onNewConversation={() => { const id=`chat-${Date.now()}`;setConversations(previous=>[{id,title:'New conversation',updatedAt:'Now'},...previous]);setMessagesByConversation(previous=>({...previous,[id]:[]}));setActiveId(id) }}
+    onSelectConversation={id => {if(generating) stop();setActiveId(id)}}
+    onRenameConversation={(id,title) => setConversations(previous=>previous.map(item=>item.id===id?{...item,title}:item))}
+    onDeleteConversation={id => {setConversations(previous=>previous.filter(item=>item.id!==id));if(id===activeId)setActiveId('') }}
+    onSend={(text,files) => {const id=activeId || `chat-${Date.now()}`;if(!activeId){setConversations(previous=>[{id,title:text.slice(0,35)||'New conversation',updatedAt:'Now'},...previous]);setActiveId(id)}append(id,{id:`user-${Date.now()}`,role:'user',content:text,createdAt:'Now',attachments:files.map((file,index)=>({id:String(index),name:file.name,size:`${Math.ceil(file.size/1024)} KB`}))});simulateResponse(id)}}
+    onRegenerate={() => simulateResponse(activeId)}
+    onEditMessage={(id,text) => {setMessagesByConversation(previous=>({...previous,[activeId]:(previous[activeId]??[]).map(message=>message.id===id?{...message,content:text}:message)}));simulateResponse(activeId)}}
+    onFeedback={(id,value) => setMessagesByConversation(previous=>({...previous,[activeId]:(previous[activeId]??[]).map(message=>message.id===id?{...message,feedback:value}:message)}))}
+  />
 }
 
 /** Form examples expose both native and searchable controls without an API dependency. */

@@ -12,6 +12,7 @@ Import components from `@errogaht/erp-ui-kit`. Import `@errogaht/erp-ui-kit/styl
 | Information | `UiInfoTip`, `UiCallout`, `UiEmptyState`, `UiSectionHeading` | Clickable contextual help, explanatory blocks, actionable empty states, and section titles. |
 | Records | `UiCard`, `UiPanel`, `UiAsidePanel`, `UiMetric`, `UiFacts`, `UiTable`, `UiItemRow`, `UiLineItem`, `UiValueCard`, `UiFile`, `UiTimeline` | Data and record structure. |
 | Inbox | `UiInboxCard`, `UiMessage`, `UiComposer`, `UiConversationCanvas`, `UiQuote`, `UiAttachmentLink`, `UiImagePreview`, `UiStatusLine`, `UiAvatar` | Conversations and message history. |
+| AI chat | `UiAiChat` | Complete assistant surface: conversation history/search, model choice, Markdown/code, file attachments, sources, streaming state, stop, retry, edit, copy and feedback. |
 | Audit | `UiHistoryEvent`, `UiChangeList`, `UiChangeRow`, `UiComparison` | Changes and before/after values. |
 | Icons | `UiIcon`, `UiBootstrapIcon` | Existing stroke icons and the complete pinned Bootstrap Icons set. |
 
@@ -27,3 +28,5 @@ For icon discovery, use the [searchable gallery](https://errogaht.github.io/erp-
 4. Release a versioned tag and update each consumer to that tag. Test the changed screens before deployment.
 
 The library is intentionally scoped to presentation. It does not own fetches, permissions, routing, currency formatting, or application state.
+
+`UiAiChat` is controlled: pass `conversations`, `messages`, `activeConversationId`, `isGenerating`, and callbacks for the actions your host supports. `onSend(text, files)` receives the text and selected `File` objects; upload and AI streaming belong to the host. The component holds only the unsent draft, selected files, search query and edit UI. Omit an optional callback to hide its action. See the [interactive local demo](https://errogaht.github.io/erp-ui-kit/#ai-chat) and [integration guide](ai-chat.md).

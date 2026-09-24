@@ -1,10 +1,10 @@
 import { defineConfig } from 'vite'
 
-// Keep React and react-select external so host applications own a single runtime.
+// Keep runtime dependencies external so consumers can tree-shake the AI chat and own one React runtime.
 export default defineConfig({
   build: {
     lib: { entry: 'src/index.ts', formats: ['es'], fileName: 'index', cssFileName: 'style' },
-    rollupOptions: { external: (id) => /^(react($|\/)|react-dom($|\/)|react-select($|\/))/.test(id) },
+    rollupOptions: { external: (id) => /^(react($|\/)|react-dom($|\/)|react-select($|\/)|react-markdown($|\/)|remark-gfm($|\/))/.test(id) },
     outDir: 'dist', emptyOutDir: false, sourcemap: true,
   },
 })
