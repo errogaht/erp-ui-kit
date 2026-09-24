@@ -1,0 +1,62 @@
+import { useEffect, useMemo, useState } from 'react'
+import { UiBadge, UiButton } from './Ui'
+import { UiBootstrapIcon } from './UiBootstrapIcon'
+import { UiInput, UiSelect } from './UiControls'
+import type { UiTaskKind, UiTaskPriority, UiTaskRecord, UiTaskStatusOption } from './task-types'
+import './ui-tasks.css'
+
+const priorityOrder: Record<UiTaskPriority, number> = { critical: 5, high: 4, medium: 3, low: 2, lowest: 1 }
+const priorityIcons = { critical: 'chevron-double-up', high: 'chevron-up', medium: 'dash', low: 'chevron-down', lowest: 'chevron-double-down' } as const
+const kindIcons = { task: 'check2-square', bug: 'bug', story: 'bookmark', epic: 'lightning' } as const
+const dateLabel = (date?: string) => date && !Number.isNaN(Date.parse(date)) ? new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(new Date(date)) : date || '—'
+
+/** A client-side task index; the host owns the records and navigation. */
+export function UiTaskList({ tasks, statuses, title = 'Tasks', projectName, onTaskOpen, onCreateTask, onBulkStatusChange, className = '' }: {
+  tasks: readonly UiTaskRecord[]
+  statuses: readonly UiTaskStatusOption[]
+  title?: string
+  projectName?: string
+  onTaskOpen: (task: UiTaskRecord) => void
+  onCreateTask?: () => void
+  onBulkStatusChange?: (ids: readonly string[], status: string) => void
+  className?: string
+}) {
+  const [query, setQuery] = useState('')
+  const [status, setStatus] = useState('all')
+  const [assignee, setAssignee] = useState('all')
+  const [priority, setPriority] = useState('all')
+  const [kind, setKind] = useState('all')
+  const [sort, setSort] = useState('updated')
+  const [view, setView] = useState<'list' | 'board'>('list')
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const completed = new Set(statuses.filter(option => option.tone === 'success').map(option => option.value))
+  const today = new Date().toISOString().slice(0, 10)
+  const people = useMemo(() => [...new Map(tasks.flatMap(task => task.assignee ? [[task.assignee.id, task.assignee] as const] : [])).values()], [tasks])
+  const visible = useMemo(() => tasks.filter(task => {
+    const search = query.toLowerCase().trim()
+    return (!search || [task.key, task.title, task.project, ...(task.labels ?? [])].some(value => value?.toLowerCase().includes(search)))
+      && (status === 'all' || task.status === status)
+      && (assignee === 'all' || (assignee === 'unassigned' ? !task.assignee : task.assignee?.id === assignee))
+      && (priority === 'all' || task.priority === priority)
+      && (kind === 'all' || task.kind === kind)
+  }).sort((a, b) => sort === 'priority' ? priorityOrder[b.priority] - priorityOrder[a.priority] : sort === 'due' ? (a.dueDate ? Date.parse(a.dueDate) : Infinity) - (b.dueDate ? Date.parse(b.dueDate) : Infinity) : (b.updatedAt ? Date.parse(b.updatedAt) : 0) - (a.updatedAt ? Date.parse(a.updatedAt) : 0)), [tasks, query, status, assignee, priority, kind, sort])
+  useEffect(() => { setPage(1) }, [query, status, assignee, priority, kind, sort, pageSize])
+  const pageCount = Math.max(1, Math.ceil(visible.length / pageSize))
+  const currentPage = Math.min(page, pageCount)
+  const paged = visible.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+  const selectedVisible = visible.filter(task => selected.has(task.id)).map(task => task.id)
+  const activeFilters = [status, assignee, priority, kind].filter(value => value !== 'all').length + Number(Boolean(query.trim()))
+  const toggleSelected = (id: string) => setSelected(previous => { const next = new Set(previous); next.has(id) ? next.delete(id) : next.add(id); return next })
+  const reset = () => { setQuery(''); setStatus('all'); setAssignee('all'); setPriority('all'); setKind('all') }
+  const statusOption = (value: string) => statuses.find(option => option.value === value)
+  return <section aria-label={title} className={`ui-kit-task-list ${className}`.trim()}>
+    <header className="ui-kit-task-list__header"><div><div className="ui-kit-task-list__eyebrow">{projectName || 'WORKSPACE'} / TASKS</div><h2>{title}</h2><p>Track work, owners and delivery across your team.</p></div>{onCreateTask && <UiButton onClick={onCreateTask} type="button" variant="primary"><UiBootstrapIcon name="plus-lg" /> Create task</UiButton>}</header>
+    <div className="ui-kit-task-list__summary"><div><strong>{tasks.length}</strong><span>Total tasks</span></div><div><strong>{tasks.filter(task => completed.has(task.status)).length}</strong><span>Completed</span></div><div><strong>{tasks.filter(task => task.priority === 'critical' || task.priority === 'high').length}</strong><span>High priority</span></div><div><strong>{tasks.filter(task => task.dueDate && task.dueDate.slice(0, 10) < today && !completed.has(task.status)).length}</strong><span>Overdue</span></div></div>
+    <div aria-label="Task filters" className="ui-kit-task-list__filters"><label className="ui-kit-task-list__search"><span>Search</span><div><UiBootstrapIcon name="search" /><UiInput aria-label="Search tasks" onChange={event => setQuery(event.target.value)} placeholder="Search key, title or label" type="search" value={query} /></div></label><label><span>Status</span><UiSelect aria-label="Filter by status" onChange={event => setStatus(event.target.value)} value={status}><option value="all">All statuses</option>{statuses.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</UiSelect></label><label><span>Assignee</span><UiSelect aria-label="Filter by assignee" onChange={event => setAssignee(event.target.value)} value={assignee}><option value="all">All assignees</option><option value="unassigned">Unassigned</option>{people.map(person => <option key={person.id} value={person.id}>{person.name}</option>)}</UiSelect></label><label><span>Priority</span><UiSelect aria-label="Filter by priority" onChange={event => setPriority(event.target.value)} value={priority}><option value="all">All priorities</option>{(['critical','high','medium','low','lowest'] as UiTaskPriority[]).map(value => <option key={value} value={value}>{value[0].toUpperCase()+value.slice(1)}</option>)}</UiSelect></label><label><span>Type</span><UiSelect aria-label="Filter by type" onChange={event => setKind(event.target.value)} value={kind}><option value="all">All types</option>{(['task','bug','story','epic'] as UiTaskKind[]).map(value => <option key={value} value={value}>{value[0].toUpperCase()+value.slice(1)}</option>)}</UiSelect></label></div>
+    <div className="ui-kit-task-list__toolbar"><div><span>{visible.length} {visible.length === 1 ? 'task' : 'tasks'}</span>{activeFilters > 0 && <button onClick={reset} type="button">Clear filters <UiBadge tone="accent">{activeFilters}</UiBadge></button>}</div><div><label>Sort <UiSelect aria-label="Sort tasks" density="compact" onChange={event => setSort(event.target.value)} value={sort}><option value="updated">Recently updated</option><option value="priority">Priority</option><option value="due">Due date</option></UiSelect></label><div aria-label="View" className="ui-kit-task-list__view" role="group"><button aria-label="List view" aria-pressed={view === 'list'} onClick={() => setView('list')} type="button"><UiBootstrapIcon name="list-ul" /></button><button aria-label="Board view" aria-pressed={view === 'board'} onClick={() => setView('board')} type="button"><UiBootstrapIcon name="columns-gap" /></button></div></div></div>
+    {selectedVisible.length > 0 && <div className="ui-kit-task-list__bulk"><strong>{selectedVisible.length} selected</strong>{onBulkStatusChange && <label>Move to <UiSelect aria-label="Move selected tasks to status" density="compact" onChange={event => { if(event.target.value) { onBulkStatusChange(selectedVisible,event.target.value);setSelected(new Set()) } }} value=""><option value="">Choose status</option>{statuses.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</UiSelect></label>}<button onClick={() => setSelected(new Set())} type="button">Clear selection</button></div>}
+    {visible.length === 0 ? <div className="ui-kit-task-list__empty"><UiBootstrapIcon name="inbox" size={25} /><strong>No tasks found</strong><p>Try another search or clear the filters.</p><UiButton onClick={reset} type="button">Clear filters</UiButton></div> : view === 'list' ? <div className="ui-kit-task-list__table-wrap"><table><thead><tr><th><input aria-label="Select all tasks on this page" checked={paged.length > 0 && paged.every(task => selected.has(task.id))} onChange={event => setSelected(previous => { const next = new Set(previous); paged.forEach(task => event.target.checked ? next.add(task.id) : next.delete(task.id)); return next })} type="checkbox" /></th><th>Task</th><th>Status</th><th>Priority</th><th>Assignee</th><th>Due</th><th>Updated</th></tr></thead><tbody>{paged.map(task => <tr key={task.id}><td><input aria-label={`Select ${task.key}`} checked={selected.has(task.id)} onChange={() => toggleSelected(task.id)} type="checkbox" /></td><td><div className="ui-kit-task-list__task-cell"><span className={`ui-kit-task-list__kind ui-kit-task-list__kind--${task.kind}`} title={task.kind}><UiBootstrapIcon name={kindIcons[task.kind]} /></span><div><button onClick={() => onTaskOpen(task)} type="button"><small>{task.key}</small><strong>{task.title}</strong></button>{task.labels && task.labels.length > 0 && <span className="ui-kit-task-list__labels">{task.labels.slice(0,2).map(label => <em key={label}>{label}</em>)}</span>}</div></div></td><td><UiBadge tone={statusOption(task.status)?.tone || 'neutral'}>{statusOption(task.status)?.label || task.status}</UiBadge></td><td><span className={`ui-kit-task-priority ui-kit-task-priority--${task.priority}`}><UiBootstrapIcon name={priorityIcons[task.priority]} />{task.priority}</span></td><td>{task.assignee ? <span className="ui-kit-task-person"><span>{task.assignee.initials || task.assignee.name.split(' ').map(word=>word[0]).join('').slice(0,2)}</span>{task.assignee.name}</span> : <span className="ui-kit-task-muted">Unassigned</span>}</td><td><time dateTime={task.dueDate}>{dateLabel(task.dueDate)}</time></td><td><time dateTime={task.updatedAt}>{dateLabel(task.updatedAt)}</time></td></tr>)}</tbody></table><div className="ui-kit-task-list__pagination"><span>{(currentPage-1)*pageSize+1}–{Math.min(currentPage*pageSize,visible.length)} of {visible.length}</span><label>Rows <UiSelect aria-label="Rows per page" density="compact" onChange={event => setPageSize(Number(event.target.value))} value={pageSize}><option value={10}>10</option><option value={25}>25</option><option value={50}>50</option></UiSelect></label><div><button aria-label="Previous page" disabled={currentPage===1} onClick={() => setPage(currentPage-1)} type="button"><UiBootstrapIcon name="chevron-left" /></button><span>Page {currentPage} of {pageCount}</span><button aria-label="Next page" disabled={currentPage===pageCount} onClick={() => setPage(currentPage+1)} type="button"><UiBootstrapIcon name="chevron-right" /></button></div></div></div> : <div className="ui-kit-task-list__board">{statuses.map(option => <div className="ui-kit-task-list__column" key={option.value}><header><UiBadge tone={option.tone || 'neutral'}>{option.label}</UiBadge><span>{visible.filter(task => task.status === option.value).length}</span></header><div>{visible.filter(task => task.status === option.value).map(task => <button className="ui-kit-task-list__board-card" key={task.id} onClick={() => onTaskOpen(task)} type="button"><span><UiBootstrapIcon name={kindIcons[task.kind]} />{task.key}</span><strong>{task.title}</strong><footer><span className={`ui-kit-task-priority ui-kit-task-priority--${task.priority}`}><UiBootstrapIcon name={priorityIcons[task.priority]} />{task.priority}</span>{task.assignee && <span className="ui-kit-task-list__board-avatar" title={task.assignee.name}>{task.assignee.initials || task.assignee.name[0]}</span>}</footer></button>)}</div></div>)}</div>}
+  </section>
+}

@@ -16,6 +16,11 @@
   "AI chat": [
     "UiAiChat"
   ],
+  "Task tracker": [
+    "UiTaskList",
+    "UiTaskDetail",
+    "UiRichTextEditor"
+  ],
   "Forms and actions": [
     "UiButton",
     "UiLinkButton",

@@ -8,9 +8,9 @@ import {
   UiInboxCard, UiInline, UiInput, UiItemRow, UiLineItem, UiLinkButton,
   UiMessage, UiMetric, UiNotice, UiPagination, UiPanel, UiPopoverMenu, UiSectionHeading,
   UiProgress, UiQuote, UiSegmented, UiSelect, UiSkeleton, UiSplit, UiStack,
-  UiStatusLine, UiTable, UiTabs, UiTextarea, UiTimeline, UiValueCard,
+  UiStatusLine, UiTable, UiTabs, UiTaskDetail, UiTaskList, UiRichTextEditor, UiTextarea, UiTimeline, UiValueCard,
 } from '../src'
-import type { UiAiChatConversation, UiAiChatMessage } from '../src'
+import type { UiAiChatConversation, UiAiChatMessage, UiTaskActivity, UiTaskComment, UiTaskPerson, UiTaskRecord, UiTaskStatusOption, UiRichTextContent } from '../src'
 
 const teams = [{ value: 'north', label: 'North team' }, { value: 'west', label: 'West team' }]
 const illustration = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180" viewBox="0 0 320 180"><rect width="320" height="180" fill="#e5eff4"/><rect x="46" y="30" width="228" height="120" rx="3" fill="#fff" stroke="#b5c0c7"/><path d="M65 62h147M65 83h192M65 104h150" stroke="#a8bac3" stroke-width="7"/><circle cx="242" cy="58" r="14" fill="#9bbfaf"/></svg>')}`
@@ -92,6 +92,49 @@ export function AiChatExamples() {
     onEditMessage={(id,text) => {setMessagesByConversation(previous=>({...previous,[activeId]:(previous[activeId]??[]).map(message=>message.id===id?{...message,content:text}:message)}));simulateResponse(activeId)}}
     onFeedback={(id,value) => setMessagesByConversation(previous=>({...previous,[activeId]:(previous[activeId]??[]).map(message=>message.id===id?{...message,feedback:value}:message)}))}
   />
+}
+
+const taskPeople: UiTaskPerson[] = [
+  { id: 'morgan', name: 'Morgan Hale', initials: 'MH' },
+  { id: 'avery', name: 'Avery Stone', initials: 'AS' },
+  { id: 'jordan', name: 'Jordan Lee', initials: 'JL' },
+]
+const taskStatuses: UiTaskStatusOption[] = [
+  { value: 'backlog', label: 'Backlog', tone: 'neutral' },
+  { value: 'todo', label: 'To do', tone: 'accent' },
+  { value: 'inProgress', label: 'In progress', tone: 'warning' },
+  { value: 'inReview', label: 'In review', tone: 'accent' },
+  { value: 'done', label: 'Done', tone: 'success' },
+]
+const taskDate = (days: number) => new Date(Date.now() + days * 86400000).toISOString().slice(0, 10)
+const initialTasks: UiTaskRecord[] = [
+  { id: '142', key: 'OPS-142', title: 'Prepare the weekly operations dashboard', kind: 'story', status: 'inProgress', priority: 'high', assignee: taskPeople[0], reporter: taskPeople[1], project: 'Operations', sprint: 'Sprint 14', estimate: '5 points', dueDate: taskDate(3), updatedAt: taskDate(0), createdAt: taskDate(-6), labels: ['analytics', 'dashboard'], description: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Create a clear overview of operational work. ' }, { type: 'text', text: 'The dashboard should help the team identify blocked records early.', marks: [{ type: 'bold' }] }] }, { type: 'bulletList', content: [{ type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Show current workload by team.' }] }] }, { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Highlight overdue and high-priority items.' }] }] }] }] }, subtasks: [{ id: 'sub-1', key: 'OPS-143', title: 'Agree on the metrics', done: true }, { id: 'sub-2', key: 'OPS-144', title: 'Build the dashboard layout', done: false }, { id: 'sub-3', key: 'OPS-145', title: 'Review mobile presentation', done: false }], attachments: [{ id: 'file-1', name: 'dashboard-wireframe.pdf', detail: 'PDF · sample file' }] },
+  { id: '146', key: 'OPS-146', title: 'Resolve an incorrect item count', kind: 'bug', status: 'inReview', priority: 'critical', assignee: taskPeople[1], reporter: taskPeople[0], project: 'Operations', dueDate: taskDate(1), updatedAt: taskDate(-1), labels: ['data'] },
+  { id: '147', key: 'OPS-147', title: 'Document the handoff checklist', kind: 'task', status: 'todo', priority: 'medium', assignee: taskPeople[2], project: 'Operations', dueDate: taskDate(5), updatedAt: taskDate(-2), labels: ['docs'] },
+  { id: '148', key: 'OPS-148', title: 'Improve the incoming request flow', kind: 'epic', status: 'backlog', priority: 'low', project: 'Operations', updatedAt: taskDate(-3), labels: ['workflow'] },
+  { id: '149', key: 'OPS-149', title: 'Verify the export on small screens', kind: 'task', status: 'done', priority: 'medium', assignee: taskPeople[1], project: 'Operations', updatedAt: taskDate(-4), labels: ['quality'] },
+  { id: '150', key: 'OPS-150', title: 'Review permission messages', kind: 'bug', status: 'todo', priority: 'high', assignee: taskPeople[0], project: 'Operations', dueDate: taskDate(-1), updatedAt: taskDate(-2), labels: ['access'] },
+]
+
+/** Fictional local state makes both tracker screens and WYSIWYG comments interactive. */
+export function TaskTrackerExamples() {
+  const [editorSample, setEditorSample] = useState<UiRichTextContent>({type: 'doc', content:[{type:'paragraph',content:[{type:'text',text:'Try the formatting toolbar, links and lists here.'}]}]})
+  const [tasks, setTasks] = useState<UiTaskRecord[]>(initialTasks)
+  const [selectedId, setSelectedId] = useState('142')
+  const [comments, setComments] = useState<Record<string, UiTaskComment[]>>({
+    '142': [{ id: 'comment-1', author: taskPeople[1], createdAt: taskDate(-1), content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'The metrics are agreed. Please include a separate overdue view.' }] }] } }],
+  })
+  const activity: UiTaskActivity[] = [{ id: 'event-1', actor: taskPeople[0], action: 'moved this task to In progress', at: taskDate(-2) }, { id: 'event-2', actor: taskPeople[1], action: 'created this task', at: taskDate(-6) }]
+  const listRef = useRef<HTMLDivElement>(null)
+  const detailRef = useRef<HTMLDivElement>(null)
+  const selected = tasks.find(task => task.id === selectedId) ?? tasks[0]
+  const open = (task: UiTaskRecord) => { setSelectedId(task.id); requestAnimationFrame(() => detailRef.current?.scrollIntoView({block:'start'})) }
+  const patch = (update: Partial<UiTaskRecord>) => setTasks(current => current.map(task => task.id === selectedId ? { ...task, ...update, updatedAt: taskDate(0) } : task))
+  return <div className="catalog-demo-stack">
+    <div ref={listRef}><Example title="Task list with filters and board view" names="UiTaskList"><UiTaskList tasks={tasks} statuses={taskStatuses} projectName="Operations" onTaskOpen={open} onCreateTask={() => { const id=String(Date.now()); const task:UiTaskRecord={id,key:`OPS-${tasks.length+145}`,title:'New task',kind:'task',status:'todo',priority:'medium',project:'Operations',updatedAt:taskDate(0)};setTasks(current=>[task,...current]);open(task) }} onBulkStatusChange={(ids,status) => setTasks(current=>current.map(task=>ids.includes(task.id)?{...task,status}:task))}/></Example></div>
+    <div ref={detailRef}><Example title="Task detail and WYSIWYG discussion" names="UiTaskDetail · UiRichTextEditor"><UiTaskDetail task={selected} statuses={taskStatuses} people={taskPeople} comments={comments[selected.id]??[]} activity={selected.id==='142'?activity:[]} onBack={() => listRef.current?.scrollIntoView({block:'start'})} onChange={patch} onToggleSubtask={(id,done)=>patch({subtasks:selected.subtasks?.map(item=>item.id===id?{...item,done}:item)})} onAddAttachment={files=>patch({attachments:[...(selected.attachments??[]),...files.map((file,index)=>({id:`${Date.now()}-${index}`,name:file.name,detail:`${Math.ceil(file.size/1024)} KB`}))]})} onAddComment={content=>setComments(current=>({...current,[selected.id]:[...(current[selected.id]??[]),{id:`comment-${Date.now()}`,author:taskPeople[0],createdAt:taskDate(0),content}]}))} onEditComment={(id,content)=>setComments(current=>({...current,[selected.id]:(current[selected.id]??[]).map(comment=>comment.id===id?{...comment,content,edited:true}:comment)}))} onDeleteComment={id=>setComments(current=>({...current,[selected.id]:(current[selected.id]??[]).filter(comment=>comment.id!==id)}))}/></Example></div>
+    <Example title="Reusable rich text editor" names="UiRichTextEditor"><UiRichTextEditor ariaLabel="Editor playground" onChange={setEditorSample} value={editorSample} /></Example>
+  </div>
 }
 
 /** Form examples expose both native and searchable controls without an API dependency. */
