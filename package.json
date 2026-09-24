@@ -21,6 +21,7 @@
     "build:types": "tsc -p tsconfig.build.json",
     "build:lib": "vite build --config vite.lib.config.ts",
     "build:docs": "vite build --config vite.docs.config.ts",
+    "check:catalog": "node scripts/check-catalog.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "prepare": "npm run build"
   },

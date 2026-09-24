@@ -1,0 +1,67 @@
+{
+  "Chat workspace": [
+    "UiInboxCard",
+    "UiMessage",
+    "UiConversationCanvas",
+    "UiComposer",
+    "UiQuote",
+    "UiAttachmentLink",
+    "UiImagePreview",
+    "UiActionTile",
+    "UiStatusLine",
+    "UiAvatar",
+    "UiDisclosure",
+    "UiPopoverMenu"
+  ],
+  "Forms and actions": [
+    "UiButton",
+    "UiLinkButton",
+    "UiIconButton",
+    "UiField",
+    "UiInput",
+    "UiSelect",
+    "UiTextarea",
+    "UiChoice",
+    "UiCombobox",
+    "UiAsyncCombobox",
+    "UiFormActionRow",
+    "UiSegmented",
+    "UiTabs"
+  ],
+  "Layout and records": [
+    "UiContainer",
+    "UiGrid",
+    "UiCell",
+    "UiStack",
+    "UiInline",
+    "UiSplit",
+    "UiCard",
+    "UiPanel",
+    "UiAsidePanel",
+    "UiMetric",
+    "UiFacts",
+    "UiTable",
+    "UiItemRow",
+    "UiLineItem",
+    "UiFile"
+  ],
+  "States and navigation": [
+    "UiBadge",
+    "UiNotice",
+    "UiProgress",
+    "UiSkeleton",
+    "UiEmpty",
+    "UiHelp",
+    "UiDialog",
+    "UiPagination",
+    "UiTimeline",
+    "UiIcon"
+  ],
+  "Audit history": [
+    "UiHistoryEvent",
+    "UiChangeList",
+    "UiChangeRow",
+    "UiComparison",
+    "UiValueCard"
+  ]
+}
