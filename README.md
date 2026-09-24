@@ -6,10 +6,10 @@ A compact React component library for operational and ERP interfaces. The librar
 
 ## Install
 
-The initial public release is distributed as a versioned GitHub dependency:
+Install a pinned GitHub release:
 
 ```sh
-npm install github:errogaht/erp-ui-kit#v0.5.0
+npm install github:errogaht/erp-ui-kit#v0.6.0
 ```
 
 Import the package and its CSS once in the host app:
@@ -27,13 +27,15 @@ React and React DOM 19 are peer dependencies. The searchable combobox uses `reac
 
 `UiAiChat` is a reusable AI assistant interface with conversation history, Markdown and code, file attachments, source links, streaming and message actions. [Try its interactive demo](https://errogaht.github.io/erp-ui-kit/#ai-chat) or read the [integration guide](docs/ai-chat.md). The host provides messages and handles AI requests; the package never calls a model or stores conversations.
 
-`UiTaskList` and `UiTaskDetail` provide a complete task tracker presentation with filters, table and board views, subtasks, metadata, activity and WYSIWYG comments. [Try the task tracker](https://errogaht.github.io/erp-ui-kit/#tasks) or read the [integration guide](docs/tasks.md). The host owns task storage and permissions.
+`UiTaskList` and `UiTaskDetail` provide a task tracker with filters, board view, a combined comments/audit/worklog feed and WYSIWYG images. [Try the task tracker](https://errogaht.github.io/erp-ui-kit/#tasks) or read the [integration guide](docs/tasks.md). The host owns task storage and permissions.
+
+`UiBadgeSelect` adds a colored status selector. `UiPhotoUpload` and `UiAvatarUpload` cover photo previews and circular cropping. [Admin patterns](https://errogaht.github.io/erp-ui-kit/#admin-patterns) provide a ready CRUD screen; see the [integration guide](docs/admin-patterns.md).
 
 Native inputs and selects and both searchable comboboxes have the same regular and compact heights. `UiField` accepts a clickable `UiInfoTip` in its `help` prop. `UiCallout`, `UiEmptyState`, and `UiSectionHeading` provide reusable information layouts; see the [Information examples](https://errogaht.github.io/erp-ui-kit/#information).
 
 ## Bootstrap Icons
 
-`UiBootstrapIcon` supports every name in the pinned official Bootstrap Icons set. The icon font is bundled into the package stylesheet, so no CDN or Bootstrap CSS is required. The older `UiIcon` remains available for existing consumers.
+`UiBootstrapIcon` supports every name in the pinned official Bootstrap Icons set. The icon font is bundled into the package stylesheet, so no CDN or Bootstrap CSS is required. All icons rendered by the kit now use Bootstrap Icons; the legacy `UiIcon` names remain available as Bootstrap Icon mappings for existing consumers.
 
 ```tsx
 import { UiBootstrapIcon, UiButton, UiBadge, UiNotice } from '@errogaht/erp-ui-kit'

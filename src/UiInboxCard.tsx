@@ -1,5 +1,5 @@
 import { UiBadge } from './Ui'
-import { UiIcon } from './UiIcon'
+import { UiBootstrapIcon } from './UiBootstrapIcon'
 import type { ReactNode } from 'react'
 
 export type UiInboxSignal = { label: string; tone: 'neutral' | 'accent' | 'warning' | 'danger' | 'success'; title?: string }
@@ -51,7 +51,7 @@ export function UiInboxCard({
       type="button"
     >
       <span className="ui-kit-inbox-card__avatar" aria-hidden="true">
-        {avatar ?? <UiIcon name="message" />}
+        {avatar ?? <UiBootstrapIcon name="chat-left-text" />}
       </span>
       <span className="ui-kit-inbox-card__copy">
         <strong className="ui-kit-inbox-card__title">{title}</strong>

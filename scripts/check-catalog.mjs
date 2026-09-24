@@ -7,10 +7,9 @@ const sourceFiles = readdirSync('src').filter(name => name.endsWith('.tsx'))
 const exports = new Set(sourceFiles.flatMap(name => [...readFileSync(`src/${name}`, 'utf8').matchAll(/^export function (Ui\w+)/gm)].map(match => match[1])))
 const groups = JSON.parse(readFileSync('docs/catalog.json', 'utf8'))
 const listed = Object.values(groups).flat()
-const examples = readFileSync('docs/examples.tsx', 'utf8')
-const importBlock = examples.match(/import \{\n([\s\S]*?)\} from '\.\.\/src'/)?.[1]
-assert.ok(importBlock, 'Examples must import the public kit')
-const imported = importBlock.split(',').map(name => name.trim()).filter(Boolean)
+// Components may live in the main examples or the dedicated icon explorer.
+const demoSources = ['docs/examples.tsx', 'docs/icons.tsx'].map(file => readFileSync(file, 'utf8'))
+const imported = [...new Set(demoSources.flatMap(source => [...source.matchAll(/^import \{([^}]*)\} from '\.\.\/src'/gm)].flatMap(match => match[1].split(',').map(name => name.trim()).filter(name => /^Ui[A-Z]/.test(name)))))]
 const main = readFileSync('docs/main.tsx', 'utf8')
 const sections = [...main.matchAll(/label: '([^']+)', detail:/g)].map(match => match[1])
 assert.equal(new Set(listed).size, listed.length, 'Each component belongs to exactly one catalog group')

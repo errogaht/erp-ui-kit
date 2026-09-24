@@ -21,6 +21,7 @@ export type UiAiChatMessage = {
   feedback?: 'positive' | 'negative'
 }
 export type UiAiChatModel = { id: string; label: string }
+export type UiAiChatEffort = { id: string; label: string }
 export type UiAiChatProps = {
   title?: string
   description?: string
@@ -29,6 +30,8 @@ export type UiAiChatProps = {
   messages: readonly UiAiChatMessage[]
   models?: readonly UiAiChatModel[]
   selectedModelId?: string
+  efforts?: readonly UiAiChatEffort[]
+  selectedEffortId?: string
   suggestions?: readonly string[]
   isGenerating?: boolean
   error?: string
@@ -46,6 +49,7 @@ export type UiAiChatProps = {
   onRenameConversation?: (id: string, title: string) => void
   onDeleteConversation?: (id: string) => void
   onModelChange?: (id: string) => void
+  onEffortChange?: (id: string) => void
 }
 
 /**
@@ -55,11 +59,11 @@ export type UiAiChatProps = {
  */
 export function UiAiChat({
   title = 'AI assistant', description = 'Ask a question or start a new conversation.',
-  conversations, activeConversationId, messages, models = [], selectedModelId,
+  conversations, activeConversationId, messages, models = [], selectedModelId, efforts = [], selectedEffortId,
   suggestions = [], isGenerating = false, error, disabled = false,
   maxFiles = 10, accept, className = '', onNewConversation, onSelectConversation,
   onSend, onStop, onRegenerate, onEditMessage, onFeedback,
-  onRenameConversation, onDeleteConversation, onModelChange,
+  onRenameConversation, onDeleteConversation, onModelChange, onEffortChange,
 }: UiAiChatProps) {
   const [draft, setDraft] = useState('')
   const [files, setFiles] = useState<File[]>([])
@@ -145,7 +149,7 @@ export function UiAiChat({
       </div>
     </aside>
     <div className="ui-kit-ai-chat__main" onDragEnter={event => { if (event.dataTransfer.types.includes('Files')) { event.preventDefault(); dropDepth.current += 1; setDragging(true) } }} onDragLeave={event => { if (dragging) { event.preventDefault(); dropDepth.current -= 1; if (dropDepth.current <= 0) { dropDepth.current = 0; setDragging(false) } } }} onDragOver={event => { if (event.dataTransfer.types.includes('Files')) event.preventDefault() }} onDrop={event => { event.preventDefault(); dropDepth.current = 0; setDragging(false); if (!disabled) appendFiles(event.dataTransfer.files) }}>
-      <header className="ui-kit-ai-chat__header"><button aria-label="Open conversation history" className="ui-kit-ai-chat__mobile-menu" onClick={() => setSidebarOpen(true)} type="button"><UiBootstrapIcon name="list" /></button><div className="ui-kit-ai-chat__header-title"><strong>{conversations.find(item => item.id === activeConversationId)?.title ?? title}</strong><small>{isGenerating ? 'Generating response…' : description}</small></div>{models.length > 0 && <label className="ui-kit-ai-chat__model"><span className="ui-kit-ai-chat__sr-only">Model</span><select aria-label="Model" disabled={disabled || isGenerating || !onModelChange} onChange={event => onModelChange?.(event.target.value)} value={selectedModelId ?? models[0].id}>{models.map(model => <option key={model.id} value={model.id}>{model.label}</option>)}</select></label>}</header>
+      <header className="ui-kit-ai-chat__header"><button aria-label="Open conversation history" className="ui-kit-ai-chat__mobile-menu" onClick={() => setSidebarOpen(true)} type="button"><UiBootstrapIcon name="list" /></button><div className="ui-kit-ai-chat__header-title"><strong>{conversations.find(item => item.id === activeConversationId)?.title ?? title}</strong><small>{isGenerating ? 'Generating response…' : description}</small></div><div className="ui-kit-ai-chat__settings">{models.length > 0 && <label className="ui-kit-ai-chat__model"><span>Model</span><select aria-label="Model" disabled={disabled || isGenerating || !onModelChange} onChange={event => onModelChange?.(event.target.value)} value={selectedModelId ?? models[0].id}>{models.map(model => <option key={model.id} value={model.id}>{model.label}</option>)}</select></label>}{efforts.length > 0 && <label className="ui-kit-ai-chat__model"><span>Effort</span><select aria-label="Effort" disabled={disabled || isGenerating || !onEffortChange} onChange={event => onEffortChange?.(event.target.value)} value={selectedEffortId ?? efforts[0].id}>{efforts.map(effort => <option key={effort.id} value={effort.id}>{effort.label}</option>)}</select></label>}</div></header>
       <div aria-label="Messages" aria-live="polite" className="ui-kit-ai-chat__transcript" onScroll={event => { const node = event.currentTarget; nearBottom.current = node.scrollHeight - node.scrollTop - node.clientHeight < 100; setShowJump(!nearBottom.current) }} ref={transcript} role="log">
         {messages.length === 0 ? <div className="ui-kit-ai-chat__welcome"><span className="ui-kit-ai-chat__welcome-mark"><UiBootstrapIcon name="stars" /></span><h2>{title}</h2><p>{description}</p>{suggestions.length > 0 && <div className="ui-kit-ai-chat__suggestions">{suggestions.map(prompt => <button disabled={disabled || isGenerating} key={prompt} onClick={() => { setDraft(prompt); textInput.current?.focus() }} type="button">{prompt}<UiBootstrapIcon name="arrow-up-right" /></button>)}</div>}</div> : messages.map(message => <article aria-label={message.role === 'user' ? 'Your message' : message.role === 'assistant' ? 'Assistant response' : 'System message'} className={`ui-kit-ai-chat__message ui-kit-ai-chat__message--${message.role}`} key={message.id}>
           <span aria-hidden="true" className="ui-kit-ai-chat__avatar"><UiBootstrapIcon name={message.role === 'user' ? 'person-fill' : message.role === 'assistant' ? 'stars' : 'info-circle'} /></span>

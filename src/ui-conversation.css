@@ -47,3 +47,8 @@
 .ui-kit-composer > .ui-kit-button { min-height: 30px; }
 .ui-kit-composer .ui-kit-popover-menu { align-self: end; }
 .ui-kit-surface .ui-kit-conversation-canvas { background: var(--ui-kit-bg); background-image: linear-gradient(#dce2e6 1px, transparent 1px), linear-gradient(90deg, #dce2e6 1px, transparent 1px); background-size: 24px 24px; }
+/* Reusable channel and optional send flags live in the same floating layer as composer actions. */
+.ui-kit-reply-settings { display:grid; gap:9px; min-width:220px; padding:5px; color:var(--ui-kit-ink); font:12px Inter,system-ui,sans-serif; }
+.ui-kit-reply-settings>label { display:grid; gap:5px; }
+.ui-kit-reply-settings>.ui-kit-reply-settings__check { display:flex; align-items:center; gap:7px; }
+.ui-kit-reply-settings__check input { accent-color:var(--ui-kit-accent); }

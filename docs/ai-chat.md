@@ -16,6 +16,12 @@ const messages: UiAiChatMessage[] = [
   conversations={conversations}
   activeConversationId="first"
   messages={messages}
+  models={[{ id: 'standard', label: 'Standard' }]}
+  selectedModelId={modelId}
+  onModelChange={setModelId}
+  efforts={[{ id: 'low', label: 'Low' }, { id: 'high', label: 'High' }]}
+  selectedEffortId={effortId}
+  onEffortChange={setEffortId}
   isGenerating={false}
   onNewConversation={() => createConversation()}
   onSelectConversation={id => selectConversation(id)}
@@ -27,4 +33,4 @@ The host should append the user message when `onSend` runs, then append an assis
 
 The file picker, drag and drop, and clipboard paste provide `File` objects through `onSend`. The host validates, uploads and stores them. For existing files, provide `attachments` with a URL. Provide source links through `sources`; URLs are rendered as external links. Markdown uses `react-markdown` and `remark-gfm`; raw HTML is not enabled. Avoid placing secrets in message text.
 
-Optional callbacks reveal their corresponding actions: `onRegenerate`, `onEditMessage`, `onFeedback`, `onRenameConversation`, `onDeleteConversation`, and `onModelChange`. The component also includes history search, mobile history drawer, code/message copying, a latest-message jump, keyboard send, empty-state suggestions and accessible loading feedback. Labels are English in the public kit; a future localization prop can be added if a consumer needs another language.
+Optional callbacks reveal their corresponding actions: `onRegenerate`, `onEditMessage`, `onFeedback`, `onRenameConversation`, `onDeleteConversation`, `onModelChange`, and `onEffortChange`. Model and effort are independent controlled choices; the host maps them to provider-specific request parameters. The component also includes history search, mobile history drawer, code/message copying, a latest-message jump, keyboard send, empty-state suggestions and accessible loading feedback. Labels are English in the public kit; a future localization prop can be added if a consumer needs another language.

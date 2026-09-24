@@ -1,5 +1,5 @@
 import { useDeferredValue, useState } from 'react'
-import { bootstrapIconNames, UiBootstrapIcon, UiBadge, UiButton, UiIconButton, UiNotice, UiStatusLine } from '../src'
+import { bootstrapIconNames, UiBootstrapIcon, UiBadge, UiButton, UiIcon, UiIconButton, UiNotice, UiStatusLine } from '../src'
 import type { BootstrapIconName } from '../src'
 import keywords from './icon-keywords.json'
 
@@ -25,5 +25,6 @@ export function IconExplorer() {
     {matches.length===0?<p className="catalog-icons__empty">No matching icon. Try another English word or browse the source collection.</p>:null}
     <div className="catalog-icons__usage"><div><span>SELECTED ICON</span><strong><UiBootstrapIcon name={selected} size={25}/> {selected}</strong><a href={`https://icons.getbootstrap.com/icons/${selected}/`} target="_blank" rel="noreferrer">Official icon page ↗</a></div><code>{snippet}</code><UiButton type="button" onClick={async()=>{await navigator.clipboard.writeText(snippet);setCopied(true)}}>{copied?'Copied':'Copy JSX'}</UiButton></div>
     <div className="catalog-icons__variants"><div><small>STANDALONE</small><p><UiBootstrapIcon name={selected} label={`${selected} icon`} size={30}/> <code>label</code> names a meaningful standalone icon.</p></div><div><small>BUTTONS</small><p><UiButton type="button" variant="primary"><UiBootstrapIcon name="floppy"/> Save</UiButton> <UiIconButton label="Delete" type="button"><UiBootstrapIcon name="trash"/></UiIconButton></p></div><div><small>BADGES & STATUS</small><p><UiBadge tone="success"><UiBootstrapIcon name="check-circle"/> Complete</UiBadge></p><UiStatusLine><UiBootstrapIcon name="clock"/> Updated today</UiStatusLine></div><div><small>ALERTS</small><UiNotice tone="warning"><UiBootstrapIcon name="exclamation-triangle"/> Review the missing details.</UiNotice></div></div>
+    <p className="catalog-icons__compat"><UiIcon name="info" /> Existing <code>UiIcon</code> names render Bootstrap Icons for older consumers; use <code>UiBootstrapIcon</code> in new work.</p>
   </div>
 }

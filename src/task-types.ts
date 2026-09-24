@@ -29,3 +29,4 @@ export type UiTaskRecord = {
 }
 export type UiTaskComment = { id: string; author: UiTaskPerson; createdAt: string; content: UiRichTextContent; edited?: boolean }
 export type UiTaskActivity = { id: string; actor: UiTaskPerson; action: string; at: string }
+export type UiTaskWorklog = { id: string; author: UiTaskPerson; at: string; minutes: number; note: string }

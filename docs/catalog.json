@@ -11,7 +11,8 @@
     "UiStatusLine",
     "UiAvatar",
     "UiDisclosure",
-    "UiPopoverMenu"
+    "UiPopoverMenu",
+    "UiReplySettings"
   ],
   "AI chat": [
     "UiAiChat"
@@ -34,7 +35,8 @@
     "UiAsyncCombobox",
     "UiFormActionRow",
     "UiSegmented",
-    "UiTabs"
+    "UiTabs",
+    "UiBadgeSelect"
   ],
   "Layout and records": [
     "UiContainer",
@@ -51,7 +53,9 @@
     "UiTable",
     "UiItemRow",
     "UiLineItem",
-    "UiFile"
+    "UiFile",
+    "UiPhotoUpload",
+    "UiAvatarUpload"
   ],
   "States and navigation": [
     "UiBadge",
@@ -62,7 +66,9 @@
     "UiHelp",
     "UiDialog",
     "UiPagination",
-    "UiTimeline"
+    "UiTimeline",
+    "UiSidebarNav",
+    "UiTopNav"
   ],
   "Information": [
     "UiInfoTip",
@@ -80,5 +86,8 @@
     "UiChangeRow",
     "UiComparison",
     "UiValueCard"
+  ],
+  "Admin patterns": [
+    "UiCrudScreen"
   ]
 }

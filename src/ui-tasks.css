@@ -38,3 +38,19 @@
 @media(max-width:1000px) { .ui-kit-task-list__filters { grid-template-columns:repeat(4,minmax(0,1fr)); }.ui-kit-task-list__search { grid-column:1/-1; }.ui-kit-task-detail__layout { grid-template-columns:minmax(0,1fr) 225px; } }
 @media(max-width:760px) { .ui-kit-task-list__header { padding:17px; }.ui-kit-task-list__summary { grid-template-columns:repeat(2,minmax(0,1fr)); padding:0 17px 15px; }.ui-kit-task-list__filters { grid-template-columns:repeat(2,minmax(0,1fr)); padding:12px 17px; }.ui-kit-task-list__toolbar { padding:8px 17px; }.ui-kit-task-list__board { grid-auto-columns:minmax(215px,72%); }.ui-kit-task-detail__header { padding:17px; }.ui-kit-task-detail__layout { display:flex; flex-direction:column; }.ui-kit-task-detail__main { padding:0 17px 15px; }.ui-kit-task-detail__sidebar { order:-1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 14px; padding:15px 17px; border-left:0; border-bottom:1px solid var(--ui-kit-line); }.ui-kit-task-detail__sidebar h3,.ui-kit-task-detail__sidebar-rule,.ui-kit-task-detail__sidebar dl,.ui-kit-task-detail__side-labels { grid-column:1/-1; }.ui-kit-task-detail__priority-note { display:none; } }
 @media(max-width:480px) { .ui-kit-task-list__header { flex-direction:column; align-items:stretch; }.ui-kit-task-list__header h2 { font-size:20px; }.ui-kit-task-list__header>.ui-kit-button { align-self:flex-start; min-width:0; }.ui-kit-task-list__toolbar { flex-wrap:wrap; }.ui-kit-task-list__toolbar>div { justify-content:space-between; width:100%; }.ui-kit-task-list__filters { gap:8px; }.ui-kit-task-list__filters>label { font-size:9px; }.ui-kit-task-list__filters .ui-kit-control { font-size:11px; }.ui-kit-task-list__bulk { flex-wrap:wrap; }.ui-kit-task-list__pagination { flex-wrap:wrap; }.ui-kit-task-detail__header { flex-direction:column; }.ui-kit-task-detail__header h2 { font-size:19px; }.ui-kit-task-detail__attachments { grid-template-columns:1fr; }.ui-kit-task-detail__comment-compose>div:last-child>span { display:none; } }
+/* Rich content previews stay within the task column and expose useful image alt text. */
+.ui-kit-rich-text__body img { display:block; max-width:100%; max-height:320px; object-fit:contain; margin:10px 0; border:1px solid var(--ui-kit-line); border-radius:var(--ui-kit-radius); }
+/* Audit and worklog entries share one chronological feed with comments. */
+.ui-kit-task-detail__tabs { overflow-x:auto; }
+.ui-kit-task-detail__tabs button { flex:none; }
+.ui-kit-task-detail__feed { display:grid; gap:13px; padding:18px 0; }
+.ui-kit-task-detail__feed-event { display:flex; align-items:flex-start; gap:9px; padding:8px 0; }
+.ui-kit-task-detail__feed-icon { display:grid; flex:none; width:27px; height:27px; place-items:center; border-radius:50%; color:var(--ui-kit-accent); background:var(--ui-kit-accent-soft); }
+.ui-kit-task-detail__feed-event p { margin:0; font-size:11px; }
+.ui-kit-task-detail__feed-event p>span { display:flex; align-items:center; gap:7px; margin-top:4px; color:var(--ui-kit-muted); }
+.ui-kit-task-detail__feed-event small { display:block; margin-top:5px; color:var(--ui-kit-muted); }
+.ui-kit-task-detail__comment header .ui-kit-badge { font-size:9px; }
+.ui-kit-task-detail__worklog-form { display:flex; align-items:end; flex-wrap:wrap; gap:8px; margin-top:16px; padding-top:13px; border-top:1px solid var(--ui-kit-line); }
+.ui-kit-task-detail__worklog-form>strong { width:100%; font-size:11px; }
+.ui-kit-task-detail__worklog-form label { display:grid; gap:4px; min-width:105px; flex:1; font-size:10px; font-weight:700; }
+.ui-kit-task-detail__worklog-form label:nth-of-type(2) { flex:3; }

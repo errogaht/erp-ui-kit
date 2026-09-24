@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, HTMLAttributes, InputHTMLAttributes, ReactNode } from 'react'
-import { UiIcon } from './UiIcon'
+import { UiBootstrapIcon } from './UiBootstrapIcon'
 import './ui-kit.css'
 
 type Tone = 'neutral' | 'accent' | 'success' | 'warning' | 'danger' | 'telegram' | 'whatsapp'
@@ -431,7 +431,7 @@ export function UiFile({
   return (
     <div className="ui-kit-file">
       <span className="ui-kit-file__mark">
-        <UiIcon name="attach" />
+        <UiBootstrapIcon name="paperclip" />
       </span>
       <span>
         <strong>{name}</strong>
@@ -439,7 +439,7 @@ export function UiFile({
       </span>
       {onRemove ? (
         <button aria-label={removeLabel ?? `Remove ${name}`} onClick={onRemove} type="button">
-          <UiIcon name="close" />
+          <UiBootstrapIcon name="x-lg" />
         </button>
       ) : null}
     </div>
@@ -451,7 +451,7 @@ export function UiHelp({ label, children }: { label: string; children: ReactNode
   return (
     <details className="ui-kit-help">
       <summary>
-        {label} <UiIcon name="info" />
+        {label} <UiBootstrapIcon name="info-circle" />
       </summary>
       <div>{children}</div>
     </details>
@@ -591,7 +591,7 @@ export function UiDialog({
             onClick={onClose}
             type="button"
           >
-            <UiIcon name="close" />
+            <UiBootstrapIcon name="x-lg" />
           </button>
         </header>
         <div className="ui-kit-dialog__body">{children}</div>

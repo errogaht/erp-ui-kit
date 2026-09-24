@@ -27,6 +27,8 @@ const statuses: UiTaskStatusOption[] = [
   people={people}
   comments={comments}
   activity={activity}
+  worklogs={worklogs}
+  onAddWorklog={(minutes, note) => logWork(activeTask.id, minutes, note)}
   onChange={patch => updateTask(activeTask.id, patch)}
   onAddComment={content => postComment(activeTask.id, content)}
 />
@@ -34,6 +36,6 @@ const statuses: UiTaskStatusOption[] = [
 
 `UiTaskList` filters, sorts and paginates the supplied `tasks` array in the browser. Pass the full intended list; for a server-paged source, compose a host-specific list around the same task data contract. The `statuses` array should cover every task status, including board columns; statuses with `tone: 'success'` count as completed. Optional bulk changes call `onBulkStatusChange(ids, status)`.
 
-`UiTaskDetail` shows title, status, priority, assignee, due date, description, subtasks, attachments, comments and activity. Optional callbacks enable editing. The host validates transitions, permission checks, uploads and persistence. Due dates and timestamps should be ISO strings.
+`UiTaskDetail` shows title, status, priority, assignee, due date, description, subtasks, attachments, comments, audit events and worklogs. Optional callbacks enable editing. The host validates transitions, permission checks, uploads and persistence. Due dates and timestamps should be ISO strings.
 
-Descriptions and comments are `UiRichTextContent` (Tiptap JSON). `UiRichTextEditor` exposes structured JSON through `onChange` and renders the same data read-only. It supports headings, bold, italic, underline, strike, lists, quotes, inline code, links, undo and redo. Store the JSON as data; do not inject unsanitized HTML into the page. The editor runs client-side and uses `immediatelyRender: false` for React SSR compatibility.
+Descriptions and comments are `UiRichTextContent` (Tiptap JSON). `UiRichTextEditor` exposes structured JSON through `onChange` and renders the same data read-only. It supports headings, bold, italic, underline, strike, lists, quotes, inline code, links, images by URL, undo and redo. Image uploads and durable URLs remain the host's responsibility. Store the JSON as data; do not inject unsanitized HTML into the page. The editor runs client-side and uses `immediatelyRender: false` for React SSR compatibility.

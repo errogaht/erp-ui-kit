@@ -58,7 +58,7 @@
 .ui-kit-control:disabled { color: var(--ui-kit-muted); background: var(--ui-kit-bg); cursor: not-allowed; }
 /* Textareas keep their own multiline height; single-line controls use one fixed geometry. */
 textarea.ui-kit-control:not([type='checkbox']):not([type='radio']):not(.sr-only) { height: auto; min-height: 78px; resize: vertical; }
-select.ui-kit-control:not([type='checkbox']):not([type='radio']):not(.sr-only) { appearance: none; padding-right: 34px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3 6 5 5 5-5' fill='none' stroke='%2352636d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-size: 14px; background-position: right 10px center; background-repeat: no-repeat; }
+select.ui-kit-control:not([type='checkbox']):not([type='radio']):not(.sr-only) { appearance: none; padding-right: 34px; background-image: url('../node_modules/bootstrap-icons/icons/chevron-down.svg'); background-size: 14px; background-position: right 10px center; background-repeat: no-repeat; }
 /* Portal menus are styled by their own class because they may render outside .ui-kit-surface. */
 .ui-kit-combobox { width: 100%; min-width: 0; font: inherit; }
 .ui-kit-combobox__control { min-height: var(--ui-kit-control-height, 36px) !important; height: var(--ui-kit-control-height, 36px) !important; border: 1px solid var(--ui-kit-line, #b5c0c7) !important; border-radius: var(--ui-kit-radius, 3px) !important; background: #fff !important; box-shadow: none !important; cursor: pointer !important; }
