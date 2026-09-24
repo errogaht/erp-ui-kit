@@ -1,0 +1,36 @@
+{
+  "name": "@errogaht/erp-ui-kit",
+  "version": "0.1.0",
+  "description": "Reusable React components for compact ERP interfaces",
+  "type": "module",
+  "repository": { "type": "git", "url": "git+https://github.com/errogaht/erp-ui-kit.git" },
+  "homepage": "https://errogaht.github.io/erp-ui-kit/",
+  "files": ["dist"],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./style.css": "./dist/style.css"
+  },
+  "sideEffects": ["**/*.css"],
+  "peerDependencies": { "react": "^19.0.0", "react-dom": "^19.0.0" },
+  "dependencies": { "react-select": "^5.10.2" },
+  "scripts": {
+    "build": "npm run build:types && npm run build:lib",
+    "build:types": "tsc -p tsconfig.build.json",
+    "build:lib": "vite build --config vite.lib.config.ts",
+    "build:docs": "vite build --config vite.docs.config.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepare": "npm run build"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.4",
+    "typescript": "~6.0.2",
+    "vite": "^8.2.0",
+    "react": "~19.2.8",
+    "react-dom": "~19.2.8"
+  }
+}

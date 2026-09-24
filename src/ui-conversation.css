@@ -1,0 +1,49 @@
+/* Conversation primitives use the UI Kit token scale; feature modules provide data and placement. */
+.ui-kit-disclosure { min-width: 0; border: 1px solid var(--ui-kit-line); border-radius: var(--ui-kit-radius); background: var(--ui-kit-subtle); }
+.ui-kit-disclosure > summary { display: flex; align-items: center; gap: 7px; min-height: 30px; padding: 5px 8px; color: var(--ui-kit-ink); cursor: pointer; font-size: 11px; font-weight: 700; list-style: none; }
+.ui-kit-disclosure > summary::-webkit-details-marker { display: none; }
+.ui-kit-disclosure > summary::after { width: 6px; height: 6px; flex: 0 0 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; content: ''; transform: rotate(45deg); transition: transform .15s ease; }
+.ui-kit-disclosure[open] > summary::after { transform: rotate(225deg); }
+.ui-kit-disclosure > summary:hover { background: var(--ui-kit-accent-soft); }
+.ui-kit-disclosure > summary > span { flex: 1; }
+.ui-kit-disclosure > summary > b { min-width: 18px; padding: 1px 4px; border-radius: var(--ui-kit-radius); color: #fff; background: var(--ui-kit-accent); text-align: center; font-size: 10px; }
+.ui-kit-disclosure__body { padding: 0 8px 8px; }
+.ui-kit-quote { display: grid; gap: 2px; min-width: 0; margin: 6px 0; padding: 6px 8px; border-left: 3px solid var(--ui-kit-accent); color: var(--ui-kit-ink); background: var(--ui-kit-accent-soft); overflow-wrap: anywhere; }
+.ui-kit-quote small { color: var(--ui-kit-muted); font-size: 10px; font-weight: 700; }
+.ui-kit-attachment-link { display: inline-flex; max-width: 100%; align-items: center; gap: 8px; padding: 7px 8px; border: 1px solid var(--ui-kit-line); border-radius: var(--ui-kit-radius); color: var(--ui-kit-accent); background: var(--ui-kit-panel); text-decoration: none; overflow-wrap: anywhere; }
+.ui-kit-attachment-link:hover { border-color: var(--ui-kit-line-strong); background: var(--ui-kit-accent-soft); }
+.ui-kit-attachment-link svg { width: 17px; height: 17px; flex: 0 0 17px; }
+.ui-kit-attachment-link > span { display: grid; gap: 2px; min-width: 0; }
+.ui-kit-attachment-link small { color: var(--ui-kit-muted); font-size: 10px; }
+.ui-kit-icon-button { display: inline-grid; width: 30px; height: 30px; flex: 0 0 30px; place-items: center; padding: 5px; border: 1px solid var(--ui-kit-line); border-radius: var(--ui-kit-radius); color: var(--ui-kit-ink); background: var(--ui-kit-panel); font: inherit; cursor: pointer; }
+.ui-kit-icon-button:hover:not(:disabled) { border-color: var(--ui-kit-line-strong); background: var(--ui-kit-accent-soft); }
+.ui-kit-icon-button:focus-visible, .ui-kit-action-tile:focus-visible, .ui-kit-image-preview:focus-visible, .ui-kit-popover-menu > summary:focus-visible, .ui-kit-disclosure > summary:focus-visible { outline: 2px solid var(--ui-kit-accent); outline-offset: 2px; }
+.ui-kit-icon-button:disabled { opacity: .5; cursor: not-allowed; }
+.ui-kit-icon-button svg { width: 17px; height: 17px; }
+.ui-kit-action-tile { display: grid; align-content: start; gap: 4px; min-width: 0; min-height: 74px; padding: 10px; border: 1px solid var(--ui-kit-line); border-radius: var(--ui-kit-radius); color: var(--ui-kit-ink); background: var(--ui-kit-panel); font: inherit; text-align: left; cursor: pointer; }
+.ui-kit-action-tile:hover { border-color: var(--ui-kit-line-strong); background: var(--ui-kit-accent-soft); }
+.ui-kit-action-tile strong { font-size: 12px; }
+.ui-kit-action-tile span { color: var(--ui-kit-muted); font-size: 10px; }
+.ui-kit-action-tile--telegram { border-left: 3px solid #2a89bb; }
+.ui-kit-action-tile--whatsapp { border-left: 3px solid #2c8c62; }
+.ui-kit-status-line { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; min-width: 0; color: var(--ui-kit-muted); font-size: 10px; overflow-wrap: anywhere; }
+.ui-kit-image-preview { display: block; max-width: min(320px, 100%); padding: 0; overflow: hidden; border: 1px solid var(--ui-kit-line); border-radius: var(--ui-kit-radius); background: var(--ui-kit-subtle); cursor: zoom-in; }
+.ui-kit-image-preview img { display: block; width: 100%; max-height: 260px; object-fit: cover; }
+.ui-kit-line-item { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 6px 10px; min-width: 0; padding: 7px 0; border-bottom: 1px solid var(--ui-kit-line); font-size: 11px; }
+.ui-kit-line-item__main { display: grid; gap: 2px; min-width: 0; overflow-wrap: anywhere; }
+.ui-kit-line-item__main a { color: var(--ui-kit-accent); font-weight: 700; }
+.ui-kit-line-item__main small { color: var(--ui-kit-muted); font-size: 10px; }
+.ui-kit-line-item > span { color: var(--ui-kit-muted); white-space: nowrap; }
+.ui-kit-line-item > strong { white-space: nowrap; }
+@media (max-width: 420px) { .ui-kit-line-item { grid-template-columns: minmax(0, 1fr) auto; } .ui-kit-line-item__main { grid-column: 1 / -1; } }
+.ui-kit-popover-menu { position: relative; align-self: center; }
+.ui-kit-popover-menu > summary { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid var(--ui-kit-line); border-radius: var(--ui-kit-radius); color: var(--ui-kit-ink); background: var(--ui-kit-panel); cursor: pointer; list-style: none; }
+.ui-kit-popover-menu > summary::-webkit-details-marker { display: none; }
+.ui-kit-popover-menu > summary:hover, .ui-kit-popover-menu[open] > summary { border-color: var(--ui-kit-line-strong); background: var(--ui-kit-accent-soft); }
+.ui-kit-popover-menu > summary[aria-disabled='true'] { cursor: not-allowed; opacity: .5; }
+.ui-kit-popover-menu > summary svg { width: 17px; height: 17px; }
+.ui-kit-popover-menu__content { position: absolute; z-index: 10; right: 0; bottom: calc(100% + 5px); min-width: 190px; padding: 7px; border: 1px solid var(--ui-kit-line-strong); border-radius: var(--ui-kit-radius); color: var(--ui-kit-ink); background: var(--ui-kit-panel); box-shadow: 0 6px 18px #22323b24; }
+.ui-kit-composer { display: grid; grid-template-columns: 30px minmax(0, 1fr) 30px auto; align-items: end; gap: 5px; min-width: 0; padding: 6px 8px; border-top: 1px solid var(--ui-kit-line); background: var(--ui-kit-subtle); }
+.ui-kit-composer > .ui-kit-button { min-height: 30px; }
+.ui-kit-composer .ui-kit-popover-menu { align-self: end; }
+.ui-kit-surface .ui-kit-conversation-canvas { background: var(--ui-kit-bg); background-image: linear-gradient(#dce2e6 1px, transparent 1px), linear-gradient(90deg, #dce2e6 1px, transparent 1px); background-size: 24px 24px; }
