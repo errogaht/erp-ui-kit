@@ -54,8 +54,11 @@
     "UiHelp",
     "UiDialog",
     "UiPagination",
-    "UiTimeline",
-    "UiIcon"
+    "UiTimeline"
+  ],
+  "Icons": [
+    "UiIcon",
+    "UiBootstrapIcon"
   ],
   "Audit history": [
     "UiHistoryEvent",

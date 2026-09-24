@@ -3,6 +3,7 @@
 This repository is the source of truth for reusable React ERP interface components.
 
 - Check `docs/catalog.md` and `src/index.ts` before adding a component.
+- For icons, search the gallery at `https://errogaht.github.io/erp-ui-kit/#icons` or run `npm run icons:search -- <English concept>`. Use `UiBootstrapIcon` for new work and keep `UiIcon` for existing consumers. Prefer an existing official glyph over adding project-specific SVGs.
 - Change shared behavior in `src/`; do not repair one consuming page with a local CSS override.
 - Keep business data, URLs, authorization, API calls, and app routing out of this package.
 - Use English for API names, built-in labels, documentation, examples, and comments. Put all sample data in an invented, generic operations context.

@@ -3,6 +3,7 @@
  */
 export * from './Ui'
 export * from './UiIcon'
+export * from './UiBootstrapIcon'
 export * from './UiLayout'
 export * from './UiInboxCard'
 export * from './UiControls'

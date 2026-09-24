@@ -9,7 +9,7 @@ A compact React component library for operational and ERP interfaces. The librar
 The initial public release is distributed as a versioned GitHub dependency:
 
 ```sh
-npm install github:errogaht/erp-ui-kit#v0.1.0
+npm install github:errogaht/erp-ui-kit#v0.2.0
 ```
 
 Import the package and its CSS once in the host app:
@@ -24,6 +24,21 @@ export function Example() {
 ```
 
 React and React DOM 19 are peer dependencies. The searchable combobox uses `react-select`. The host controls business state, localization, navigation, and data access. `UiComparison` accepts `beforeLabel` and `afterLabel` for localization.
+
+## Bootstrap Icons
+
+`UiBootstrapIcon` supports every name in the pinned official Bootstrap Icons set. The icon font is bundled into the package stylesheet, so no CDN or Bootstrap CSS is required. The older `UiIcon` remains available for existing consumers.
+
+```tsx
+import { UiBootstrapIcon, UiButton, UiBadge, UiNotice } from '@errogaht/erp-ui-kit'
+
+<UiBootstrapIcon name="truck" label="Delivery" size={24} />
+<UiButton type="button"><UiBootstrapIcon name="floppy" /> Save</UiButton>
+<UiBadge tone="success"><UiBootstrapIcon name="check-circle" /> Complete</UiBadge>
+<UiNotice tone="warning"><UiBootstrapIcon name="exclamation-triangle" /> Review the details.</UiNotice>
+```
+
+Search the [interactive icon catalog](https://errogaht.github.io/erp-ui-kit/#icons) or run `npm run icons:search -- payment` in this repository. Use `label` for a meaningful standalone icon; icons next to visible text are decorative by default. The pinned icon assets are from [Bootstrap Icons](https://icons.getbootstrap.com/) under the MIT license.
 
 For a new version, update the tag in `package.json` of the consuming project and run `npm install`. A GitHub release also contains the built npm tarball. The package can move to the public npm registry later without changing component imports.
 

@@ -12,7 +12,9 @@ Import components from `@errogaht/erp-ui-kit`. Import `@errogaht/erp-ui-kit/styl
 | Records | `UiCard`, `UiPanel`, `UiAsidePanel`, `UiMetric`, `UiFacts`, `UiTable`, `UiItemRow`, `UiLineItem`, `UiValueCard`, `UiFile`, `UiTimeline` | Data and record structure. |
 | Inbox | `UiInboxCard`, `UiMessage`, `UiComposer`, `UiConversationCanvas`, `UiQuote`, `UiAttachmentLink`, `UiImagePreview`, `UiStatusLine`, `UiAvatar` | Conversations and message history. |
 | Audit | `UiHistoryEvent`, `UiChangeList`, `UiChangeRow`, `UiComparison` | Changes and before/after values. |
-| Icons | `UiIcon` | Small consistent stroke icons. |
+| Icons | `UiIcon`, `UiBootstrapIcon` | Existing stroke icons and the complete pinned Bootstrap Icons set. |
+
+For icon discovery, use the [searchable gallery](https://errogaht.github.io/erp-ui-kit/#icons) or `npm run icons:search -- <concept>`. The search accepts English icon names and common concepts such as `chat`, `payment`, and `delivery`. `UiBootstrapIcon` accepts a typed official name; its CSS and font ship with the package.
 
 ## Agent decision path
 

@@ -1,0 +1,18 @@
+{
+  "chat": ["chat", "message", "inbox"],
+  "message": ["chat", "envelope", "send"],
+  "save": ["floppy", "cloud-check", "check"],
+  "delete": ["trash", "x-circle"],
+  "edit": ["pencil", "pen"],
+  "search": ["search", "funnel"],
+  "settings": ["gear", "sliders", "tools"],
+  "payment": ["credit-card", "cash", "wallet", "currency"],
+  "order": ["cart", "receipt", "bag", "box"],
+  "delivery": ["truck", "box-seam", "geo-alt"],
+  "user": ["person", "people", "person-circle"],
+  "success": ["check-circle", "check2", "patch-check"],
+  "warning": ["exclamation-triangle", "exclamation-circle"],
+  "error": ["x-circle", "exclamation-octagon"],
+  "calendar": ["calendar", "clock"],
+  "attachment": ["paperclip", "file-earmark"]
+}

@@ -1,0 +1,29 @@
+/* The official Bootstrap Icons font is isolated to this UI Kit class. */
+@font-face {
+  font-family: 'erp-ui-bootstrap-icons';
+  src: url('../node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2') format('woff2');
+  font-display: block;
+}
+.ui-kit-bootstrap-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+  flex: 0 0 auto;
+  color: inherit;
+  font-size: 1.25em;
+  line-height: 1;
+  vertical-align: -.12em;
+}
+.ui-kit-bootstrap-icon::before {
+  content: attr(data-glyph);
+  font-family: 'erp-ui-bootstrap-icons';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.ui-kit-badge .ui-kit-bootstrap-icon { font-size: 1.2em; }
+.ui-kit-notice > .ui-kit-bootstrap-icon { margin-inline-end: 7px; vertical-align: -.2em; }

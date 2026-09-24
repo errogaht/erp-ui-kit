@@ -143,6 +143,7 @@
 .ui-kit-badge {
   display: inline-flex;
   align-items: center;
+  gap: 3px;
   max-width: 100%;
   padding: 2px 5px;
   border: 1px solid #ccd3d6;

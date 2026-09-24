@@ -3,7 +3,7 @@
     "target": "ES2023", "lib": ["ES2023", "DOM"], "module": "ESNext",
     "moduleResolution": "Bundler", "jsx": "react-jsx", "strict": true,
     "types": ["vite/client"],
-    "verbatimModuleSyntax": true, "skipLibCheck": true,
+    "verbatimModuleSyntax": true, "skipLibCheck": true, "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true, "noUnusedLocals": true,
     "noUnusedParameters": true, "noEmit": true
   },

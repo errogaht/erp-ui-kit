@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
   UiActionTile, UiAsidePanel, UiAsyncCombobox, UiAttachmentLink, UiAvatar,
-  UiBadge, UiButton, UiCard, UiCell, UiChangeList, UiChangeRow, UiChoice,
+  UiBadge, UiBootstrapIcon, UiButton, UiCard, UiCell, UiChangeList, UiChangeRow, UiChoice,
   UiCombobox, UiComparison, UiComposer, UiContainer, UiConversationCanvas,
   UiDialog, UiDisclosure, UiEmpty, UiFacts, UiField, UiFile, UiFormActionRow,
   UiGrid, UiHelp, UiHistoryEvent, UiIcon, UiIconButton, UiImagePreview,
@@ -36,7 +36,7 @@ export function ChatWorkspace() {
         <UiMessage><p>Here is the reference document.</p><UiAttachmentLink href="#conversation" label="reference.pdf" detail="PDF · sample attachment"/><UiImagePreview src={illustration} alt="Open sample document preview" onClick={()=>setImageOpen(true)}/><UiStatusLine><span>10:46</span></UiStatusLine></UiMessage>
         {sent && <UiMessage outgoing><p>{draft || 'We will follow up shortly.'}</p><UiStatusLine><span>Just now · Example only</span></UiStatusLine></UiMessage>}
       </UiConversationCanvas>
-      <UiComposer onSubmit={event=>{event.preventDefault();setSent(true)}}><UiIconButton label="Attach file" type="button"><UiIcon name="attach"/></UiIconButton><UiPopoverMenu label="Reply options" icon={<UiIcon name="message"/>}><UiButton type="button" variant="quiet">Insert template</UiButton></UiPopoverMenu><UiInput aria-label="Message" placeholder="Write a reply…" value={draft} onChange={event=>{setDraft(event.target.value);setSent(false)}}/><UiButton type="submit" variant="primary">Send</UiButton></UiComposer>
+      <UiComposer onSubmit={event=>{event.preventDefault();setSent(true)}}><UiIconButton label="Attach file" type="button"><UiIcon name="attach"/></UiIconButton><UiPopoverMenu label="Reply options" icon={<UiIcon name="message"/>}><UiButton type="button" variant="quiet">Insert template</UiButton></UiPopoverMenu><UiInput aria-label="Message" placeholder="Write a reply…" value={draft} onChange={event=>{setDraft(event.target.value);setSent(false)}}/><UiButton type="submit" variant="primary"><UiBootstrapIcon name="send"/> Send</UiButton></UiComposer>
     </div>
     <div className="catalog-chat__details"><div className="catalog-chat__column-title"><strong>Linked record</strong><UiBadge tone="warning">Open</UiBadge></div><UiPanel title="CASE-1042"><UiFacts items={[{label:'Owner',value:'North team'},{label:'Status',value:'Awaiting confirmation'},{label:'Priority',value:'Normal'}]}/></UiPanel><UiActionTile title="Open record" detail="View linked operational data" type="button"/><UiActionTile title="Add internal note" detail="Keep context with this conversation" type="button"/><UiLineItem title="Sample item" detail="SKU DEMO-1" quantity="2 units" amount="$48.00"/></div>
     <UiDialog open={imageOpen} title="Sample document preview" size="image" onClose={()=>setImageOpen(false)}><img alt="Generic document illustration" src={illustration}/></UiDialog>
