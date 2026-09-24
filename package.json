@@ -1,6 +1,6 @@
 {
   "name": "@errogaht/erp-ui-kit",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Reusable React components for compact ERP interfaces",
   "type": "module",
   "repository": {

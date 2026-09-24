@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import type { ChangeEvent, DragEvent, KeyboardEvent } from 'react'
+import type { ChangeEvent, DragEvent, KeyboardEvent, PointerEvent as ReactPointerEvent, SyntheticEvent } from 'react'
 import { UiBadge } from './Ui'
 import { UiBootstrapIcon } from './UiBootstrapIcon'
 import type { BootstrapIconName } from './UiBootstrapIcon'
@@ -54,34 +54,116 @@ export function UiPhotoUpload({ value, src, onChange, label = 'Photo', accept = 
   return <div className={`ui-kit-photo-upload ${dragging ? 'is-dragging' : ''} ${className}`.trim()}><input accept={accept} aria-label={`Choose ${label.toLowerCase()}`} disabled={disabled} hidden onChange={(event: ChangeEvent<HTMLInputElement>) => { choose(event.target.files?.[0]); event.target.value = '' }} ref={input} type="file" /><div className="ui-kit-photo-upload__drop" onDragOver={event => { event.preventDefault(); if (!disabled) setDragging(true) }} onDragLeave={() => setDragging(false)} onDrop={drop}>{preview ? <img alt={`${label} preview`} src={preview} /> : <UiBootstrapIcon name="image" size={25} />}<div><strong>{preview ? value?.name || label : `Add ${label.toLowerCase()}`}</strong><small>Drop an image here or choose a file</small></div><button disabled={disabled} onClick={() => input.current?.click()} type="button">{preview ? 'Replace' : 'Choose file'}</button></div>{preview && <button className="ui-kit-photo-upload__remove" disabled={disabled} onClick={() => onChange(null)} type="button"><UiBootstrapIcon name="trash" /> Remove photo</button>}</div>
 }
 
-/** Circular crop preview and PNG output stay local; the host handles upload and storage. */
+type CropCircle = { centerX: number; centerY: number; diameter: number }
+type ImageFrame = { left: number; top: number; width: number; height: number; scale: number }
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
+
+/**
+ * An image-space circle keeps the visible selection and exported PNG aligned.
+ * Pointer coordinates are converted through the fitted image frame, so touch,
+ * mouse and responsive resizing all crop the same source pixels.
+ */
 export function UiAvatarUpload({ src, onChange, size = 160, className = '' }: { src?: string; onChange: (file: File | null) => void; size?: number; className?: string }) {
   const input = useRef<HTMLInputElement>(null)
   const image = useRef<HTMLImageElement>(null)
+  const stage = useRef<HTMLDivElement>(null)
+  const drag = useRef<{ mode: 'move' | 'resize'; pointerX: number; pointerY: number; start: CropCircle } | null>(null)
   const [source, setSource] = useState(src)
-  const [zoom, setZoom] = useState(1)
-  const [offsetX, setOffsetX] = useState(0)
-  const [offsetY, setOffsetY] = useState(0)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
-  useEffect(() => setSource(src), [src])
-  const choose = (file?: File) => { if (!file?.type.startsWith('image/')) return; const reader = new FileReader(); reader.onload = () => { setSource(String(reader.result)); setZoom(1); setOffsetX(0); setOffsetY(0) }; reader.readAsDataURL(file) }
+  const [stageSize, setStageSize] = useState({ width: 320, height: 240 })
+  const [circle, setCircle] = useState<CropCircle>({ centerX: .5, centerY: .5, diameter: .7 })
+  const [error, setError] = useState('')
+  useEffect(() => { setSource(src); setError('') }, [src])
+  useEffect(() => {
+    if (!stage.current) return
+    const observer = new ResizeObserver(([entry]) => setStageSize({ width: entry.contentRect.width, height: entry.contentRect.height }))
+    observer.observe(stage.current)
+    return () => observer.disconnect()
+  }, [])
+  const scale = dimensions.width && dimensions.height ? Math.min(stageSize.width / dimensions.width, stageSize.height / dimensions.height) : 0
+  const frame: ImageFrame = { width: dimensions.width * scale, height: dimensions.height * scale, left: (stageSize.width - dimensions.width * scale) / 2, top: (stageSize.height - dimensions.height * scale) / 2, scale }
+  const smallest = Math.min(frame.width, frame.height)
+  const diameter = circle.diameter * smallest
+  const centerX = frame.left + circle.centerX * frame.width
+  const centerY = frame.top + circle.centerY * frame.height
+  const cropLeft = centerX - diameter / 2
+  const cropTop = centerY - diameter / 2
+  const minimum = Math.min(48, smallest * .35)
+  const placeCircle = (next: CropCircle) => {
+    const nextDiameter = clamp(next.diameter * smallest, minimum, smallest)
+    const radius = nextDiameter / 2
+    setCircle({ centerX: clamp(next.centerX, radius / frame.width, 1 - radius / frame.width), centerY: clamp(next.centerY, radius / frame.height, 1 - radius / frame.height), diameter: nextDiameter / smallest })
+  }
+  const choose = (file?: File) => {
+    if (!file?.type.startsWith('image/')) return
+    const reader = new FileReader()
+    reader.onload = () => { setSource(String(reader.result)); setDimensions({ width: 0, height: 0 }); setError('') }
+    reader.readAsDataURL(file)
+  }
+  const imageLoaded = (event: SyntheticEvent<HTMLImageElement>) => {
+    const node = event.currentTarget
+    const width = node.naturalWidth, height = node.naturalHeight
+    setDimensions({ width, height })
+    const fitted = Math.min(stageSize.width / width, stageSize.height / height) * Math.min(width, height)
+    setCircle({ centerX: .5, centerY: .5, diameter: Math.min(size, fitted * .72) / fitted })
+  }
+  const startDrag = (event: ReactPointerEvent<HTMLElement>, mode: 'move' | 'resize') => {
+    event.preventDefault()
+    event.stopPropagation()
+    if (!smallest) return
+    drag.current = { mode, pointerX: event.clientX, pointerY: event.clientY, start: circle }
+    stage.current?.setPointerCapture(event.pointerId)
+  }
+  const moveDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!drag.current || !smallest) return
+    const dx = event.clientX - drag.current.pointerX, dy = event.clientY - drag.current.pointerY
+    const original = drag.current.start
+    if (drag.current.mode === 'move') {
+      placeCircle({ ...original, centerX: original.centerX + dx / frame.width, centerY: original.centerY + dy / frame.height })
+      return
+    }
+    const originalX = frame.left + original.centerX * frame.width
+    const originalY = frame.top + original.centerY * frame.height
+    const pointerX = drag.current.pointerX + dx - stage.current!.getBoundingClientRect().left
+    const pointerY = drag.current.pointerY + dy - stage.current!.getBoundingClientRect().top
+    const wanted = 2 * Math.hypot(pointerX - originalX, pointerY - originalY)
+    const max = 2 * Math.min(originalX - frame.left, frame.left + frame.width - originalX, originalY - frame.top, frame.top + frame.height - originalY)
+    placeCircle({ ...original, diameter: clamp(wanted, minimum, max) / smallest })
+  }
+  const stopDrag = (event: ReactPointerEvent<HTMLDivElement>) => { drag.current = null; if (stage.current?.hasPointerCapture(event.pointerId)) stage.current.releasePointerCapture(event.pointerId) }
+  const moveWithKeys = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key) || !smallest) return
+    event.preventDefault()
+    const direction = event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? -1 : 1
+    if (event.target instanceof HTMLButtonElement) placeCircle({ ...circle, diameter: circle.diameter + direction * 8 / smallest })
+    else placeCircle({ ...circle, centerX: circle.centerX + (event.key.includes('Left') || event.key.includes('Right') ? direction * 8 / frame.width : 0), centerY: circle.centerY + (event.key.includes('Up') || event.key.includes('Down') ? direction * 8 / frame.height : 0) })
+  }
   const crop = () => {
     const node = image.current
-    if (!node || !node.naturalWidth) return
+    if (!node || !frame.scale || !diameter) return
     const canvas = document.createElement('canvas')
     canvas.width = 256; canvas.height = 256
     const context = canvas.getContext('2d')
     if (!context) return
-    const scale = Math.max(size / node.naturalWidth, size / node.naturalHeight) * zoom
-    const width = node.naturalWidth * scale, height = node.naturalHeight * scale
-    context.scale(256 / size, 256 / size)
-    context.beginPath(); context.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2); context.clip()
-    context.drawImage(node, (size - width) / 2 + offsetX, (size - height) / 2 + offsetY, width, height)
-    canvas.toBlob(blob => { if (blob) onChange(new File([blob], 'avatar.png', { type: 'image/png' })) }, 'image/png')
+    const sourceX = (cropLeft - frame.left) / frame.scale
+    const sourceY = (cropTop - frame.top) / frame.scale
+    const sourceSize = diameter / frame.scale
+    context.beginPath(); context.arc(128, 128, 128, 0, Math.PI * 2); context.clip()
+    try {
+      context.drawImage(node, sourceX, sourceY, sourceSize, sourceSize, 0, 0, 256, 256)
+      canvas.toBlob(blob => { if (blob) onChange(new File([blob], 'avatar.png', { type: 'image/png' })); else setError('Could not create the cropped image.') }, 'image/png')
+    } catch { setError('This image cannot be cropped here. Choose a local file.') }
   }
-  const scale = dimensions.width ? Math.max(size / dimensions.width, size / dimensions.height) * zoom : 1
-  const imageStyle = dimensions.width ? { width: dimensions.width * scale, height: dimensions.height * scale, transform: `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))` } : undefined
-  return <div className={`ui-kit-avatar-upload ${className}`.trim()}><input accept="image/*" aria-label="Choose avatar image" hidden onChange={event => { choose(event.target.files?.[0]); event.target.value = '' }} ref={input} type="file" /><div className="ui-kit-avatar-upload__preview" style={{ width: size, height: size }}>{source ? <img alt="Avatar crop preview" onLoad={event => setDimensions({ width: event.currentTarget.naturalWidth, height: event.currentTarget.naturalHeight })} ref={image} src={source} style={imageStyle} /> : <UiBootstrapIcon name="person" size={48} />}</div><div className="ui-kit-avatar-upload__actions"><button onClick={() => input.current?.click()} type="button"><UiBootstrapIcon name="upload" /> Choose image</button>{source && <button onClick={() => { setSource(undefined); onChange(null) }} type="button"><UiBootstrapIcon name="trash" /> Remove</button>}</div>{source && <><label>Zoom<input max="3" min="1" onChange={event => setZoom(Number(event.target.value))} step="0.05" type="range" value={zoom} /></label><div className="ui-kit-avatar-upload__position"><label>Horizontal<input max="50" min="-50" onChange={event => setOffsetX(Number(event.target.value))} type="range" value={offsetX} /></label><label>Vertical<input max="50" min="-50" onChange={event => setOffsetY(Number(event.target.value))} type="range" value={offsetY} /></label></div><button className="ui-kit-avatar-upload__save" onClick={crop} type="button">Apply crop</button></>}</div>
+  const previewScale = diameter ? 72 / diameter : 1
+  return <div className={`ui-kit-avatar-upload ${className}`.trim()}>
+    <input accept="image/*" aria-label="Choose avatar image" hidden onChange={event => { choose(event.target.files?.[0]); event.target.value = '' }} ref={input} type="file" />
+    <div className="ui-kit-avatar-upload__stage" onPointerCancel={stopDrag} onPointerMove={moveDrag} onPointerUp={stopDrag} ref={stage}>
+      {source ? <><img alt="Image to crop" className="ui-kit-avatar-upload__image" onLoad={imageLoaded} ref={image} src={source} style={{ left: frame.left, top: frame.top, width: frame.width, height: frame.height }} />{smallest > 0 && <div aria-label="Move crop circle with arrow keys" className="ui-kit-avatar-upload__circle" onKeyDown={moveWithKeys} onPointerDown={event => startDrag(event, 'move')} role="group" style={{ left: cropLeft, top: cropTop, width: diameter, height: diameter }} tabIndex={0}><span aria-hidden="true" className="ui-kit-avatar-upload__crosshair" /><button aria-label="Resize crop circle with arrow keys or drag" className="ui-kit-avatar-upload__resize" onPointerDown={event => startDrag(event, 'resize')} title="Drag to resize" type="button"><UiBootstrapIcon name="arrows-angle-expand" /></button></div>}</> : <div className="ui-kit-avatar-upload__empty"><UiBootstrapIcon name="person-circle" size={38} /><span>Choose an image to crop</span></div>}
+    </div>
+    {source && smallest > 0 && <div className="ui-kit-avatar-upload__preview-row"><span className="ui-kit-avatar-upload__result" role="img" aria-label="Avatar preview"><img alt="" src={source} style={{ width: frame.width * previewScale, height: frame.height * previewScale, left: -(cropLeft - frame.left) * previewScale, top: -(cropTop - frame.top) * previewScale }} /></span><p>Drag the circle to position it. Drag its corner to resize. Arrow keys also work.</p></div>}
+    <div className="ui-kit-avatar-upload__actions"><button onClick={() => input.current?.click()} type="button"><UiBootstrapIcon name="upload" /> Choose image</button>{source && <><button onClick={crop} type="button" className="ui-kit-avatar-upload__save">Apply crop</button><button onClick={() => { setSource(undefined); setDimensions({ width: 0, height: 0 }); onChange(null) }} type="button"><UiBootstrapIcon name="trash" /> Remove</button></>}</div>
+    {error && <small className="ui-kit-avatar-upload__error" role="alert">{error}</small>}
+  </div>
 }
 
 export type UiNavItem = { id: string; label: string; href: string; icon?: BootstrapIconName; badge?: string }
