@@ -3,10 +3,10 @@ import {
   UiActionTile, UiAsidePanel, UiAsyncCombobox, UiAttachmentLink, UiAvatar,
   UiBadge, UiBootstrapIcon, UiButton, UiCard, UiCell, UiChangeList, UiChangeRow, UiChoice,
   UiCombobox, UiComparison, UiComposer, UiContainer, UiConversationCanvas,
-  UiDialog, UiDisclosure, UiEmpty, UiFacts, UiField, UiFile, UiFormActionRow,
-  UiGrid, UiHelp, UiHistoryEvent, UiIcon, UiIconButton, UiImagePreview,
+  UiCallout, UiDialog, UiDisclosure, UiEmpty, UiEmptyState, UiFacts, UiField, UiFile, UiFormActionRow,
+  UiGrid, UiHelp, UiHistoryEvent, UiIcon, UiIconButton, UiImagePreview, UiInfoTip,
   UiInboxCard, UiInline, UiInput, UiItemRow, UiLineItem, UiLinkButton,
-  UiMessage, UiMetric, UiNotice, UiPagination, UiPanel, UiPopoverMenu,
+  UiMessage, UiMetric, UiNotice, UiPagination, UiPanel, UiPopoverMenu, UiSectionHeading,
   UiProgress, UiQuote, UiSegmented, UiSelect, UiSkeleton, UiSplit, UiStack,
   UiStatusLine, UiTable, UiTabs, UiTextarea, UiTimeline, UiValueCard,
 } from '../src'
@@ -50,7 +50,30 @@ export function FormsAndActions() {
   const [tab, setTab] = useState('overview')
   return <div className="catalog-demo-stack">
     <Example title="Actions" names="UiButton · UiLinkButton · UiIconButton · UiFormActionRow"><UiInline gap="normal"><UiButton type="button" variant="primary">Save changes</UiButton><UiButton type="button">Secondary</UiButton><UiButton type="button" variant="danger">Delete</UiButton><UiButton type="button" variant="quiet">Quiet</UiButton><UiLinkButton href="#records">Open records ↗</UiLinkButton><UiIconButton label="Refresh" type="button"><UiIcon name="refresh"/></UiIconButton></UiInline><UiFormActionRow field={<UiField label="Find a record">{({id})=><UiInput id={id} placeholder="Enter reference"/>}</UiField>} action={<UiButton type="button" variant="primary">Search</UiButton>}/></Example>
-    <Example title="Text, choice and select fields" names="UiField · UiInput · UiSelect · UiTextarea · UiChoice · UiCombobox · UiAsyncCombobox"><div className="catalog-field-grid"><UiField label="Reference" hint="Use an internal reference">{({id,describedBy,invalid})=><UiInput id={id} aria-describedby={describedBy} aria-invalid={invalid} defaultValue="CASE-1042"/>}</UiField><UiField label="Priority">{({id})=><UiSelect id={id} defaultValue="normal"><option value="normal">Normal</option><option value="high">High</option></UiSelect>}</UiField><UiField label="Searchable team">{({id})=><UiCombobox inputId={id} options={teams} value={team} onChange={value=>value&&setTeam(value)}/>}</UiField><UiField label="Async team search" hint="Options are loaded from a local sample">{({id})=><UiAsyncCombobox inputId={id} defaultOptions={teams} loadOptions={async input=>teams.filter(option=>option.label.toLowerCase().includes(input.toLowerCase()))}/>}</UiField><UiField label="Notes">{({id})=><UiTextarea id={id} rows={2} defaultValue="Review the latest update."/>}</UiField><UiField label="Validation" error="Reference is required">{({id,describedBy,invalid})=><UiInput id={id} aria-describedby={describedBy} aria-invalid={invalid}/>}</UiField></div><UiInline gap="relaxed"><UiChoice type="checkbox" label="Notify owner" defaultChecked/><UiChoice type="radio" label="Standard" name="service" defaultChecked/><UiChoice type="radio" label="Express" name="service"/></UiInline></Example>
+    <Example title="Text, choice and select fields" names="UiField · UiInput · UiSelect · UiTextarea · UiChoice · UiCombobox · UiAsyncCombobox · UiInfoTip">
+      <div className="catalog-field-grid">
+        <UiField label="Reference" help={<UiInfoTip label="About reference numbers">Use a short identifier that your team can recognize in lists and messages.</UiInfoTip>}>
+          {({id,describedBy,invalid})=><UiInput id={id} aria-describedby={describedBy} aria-invalid={invalid} defaultValue="CASE-1042"/>}
+        </UiField>
+        <UiField label="Priority">{({id})=><UiSelect id={id} defaultValue="normal"><option value="normal">Normal</option><option value="high">High</option></UiSelect>}</UiField>
+        <UiField label="Searchable team">{({id})=><UiCombobox inputId={id} options={teams} value={team} onChange={value=>value&&setTeam(value)}/>}</UiField>
+        <UiField label="Async team search" help={<UiInfoTip label="About async search">Type a team name to load matching options. This demo uses a local sample list.</UiInfoTip>}>
+          {({id})=><UiAsyncCombobox inputId={id} defaultOptions={teams} loadOptions={async input=>teams.filter(option=>option.label.toLowerCase().includes(input.toLowerCase()))}/>}
+        </UiField>
+        <UiField label="Validation" error="Reference is required">{({id,describedBy,invalid})=><UiInput id={id} aria-describedby={describedBy} aria-invalid={invalid}/>}</UiField>
+        <UiField label="Unavailable field">{({id})=><UiInput id={id} value="Managed elsewhere" disabled readOnly/>}</UiField>
+        <UiField label="Notes" className="catalog-field-grid__wide">{({id})=><UiTextarea id={id} rows={3} defaultValue="Review the latest update."/>}</UiField>
+      </div>
+      <UiInline gap="relaxed"><UiChoice type="checkbox" label="Notify owner" defaultChecked/><UiChoice type="radio" label="Standard" name="service" defaultChecked/><UiChoice type="radio" label="Express" name="service"/></UiInline>
+    </Example>
+    <Example title="Compact field geometry" names="UiInput · UiSelect · UiCombobox · UiAsyncCombobox">
+      <div className="catalog-field-grid">
+        <UiField label="Compact text">{({id})=><UiInput id={id} density="compact" placeholder="Search"/>}</UiField>
+        <UiField label="Compact choice">{({id})=><UiSelect id={id} density="compact"><option>All records</option><option>Open records</option></UiSelect>}</UiField>
+        <UiField label="Compact searchable">{({id})=><UiCombobox inputId={id} density="compact" options={teams} defaultValue={teams[0]}/>}</UiField>
+        <UiField label="Compact async">{({id})=><UiAsyncCombobox inputId={id} density="compact" defaultOptions={teams} loadOptions={async input=>teams.filter(option=>option.label.toLowerCase().includes(input.toLowerCase()))}/>}</UiField>
+      </div>
+    </Example>
     <Example title="Views and filters" names="UiSegmented · UiTabs"><UiSegmented label="Record filter" options={[{value:'all',label:'All'},{value:'open',label:'Open'},{value:'done',label:'Done'}]} value={filter} onChange={setFilter}/><UiTabs label="Record views" items={[{value:'overview',label:'Overview'},{value:'activity',label:'Activity'}]} value={tab} onChange={setTab} renderPanel={value=><p>{value==='overview'?'Summary information for this record.':'Recent activity for this record.'}</p>}/></Example>
   </div>
 }
@@ -74,6 +97,27 @@ export function StatesAndNavigation() {
     <Example title="Badges, notices and progress" names="UiBadge · UiNotice · UiProgress"><UiInline><UiBadge>Default</UiBadge><UiBadge tone="accent">Active</UiBadge><UiBadge tone="success">Complete</UiBadge><UiBadge tone="warning">Review</UiBadge><UiBadge tone="danger">Blocked</UiBadge></UiInline><UiNotice tone="success">The sample record was saved.</UiNotice><UiNotice tone="warning">Two details still need review.</UiNotice><UiProgress label="Completion" value={74}/></Example>
     <Example title="Loading, empty state and help" names="UiSkeleton · UiEmpty · UiHelp"><UiGrid><UiCell mobile={12} tablet={6}><UiSkeleton lines={3}/></UiCell><UiCell mobile={12} tablet={6}><UiEmpty>No records match this filter.</UiEmpty><UiHelp label="How filters work">Filters apply only to the current list.</UiHelp></UiCell></UiGrid></Example>
     <Example title="Dialog, pagination, timeline and icons" names="UiDialog · UiPagination · UiTimeline · UiIcon"><UiInline><UiButton type="button" onClick={()=>setDialogOpen(true)}>Open dialog</UiButton>{(['search','filter','refresh','attach','close','check','warning','info','clock','message','wallet','box','arrow-right'] as const).map(name=><span className="catalog-icon" title={name} key={name}><UiIcon name={name}/><small>{name}</small></span>)}</UiInline><UiPagination page={page} pageCount={4} onChange={setPage}/><UiTimeline items={[{id:'one',at:'Today · 11:15',dateTime:'2026-01-15T11:15:00',title:'Assigned to North team',detail:'Changed by an operator'},{id:'two',at:'Yesterday · 09:00',dateTime:'2026-01-14T09:00:00',title:'Record created'}]}/><UiDialog open={dialogOpen} title="Confirm sample action" description="This is a local, non-persistent demonstration." onClose={()=>setDialogOpen(false)} actions={<UiButton type="button" variant="primary" onClick={()=>setDialogOpen(false)}>Done</UiButton>}><p>The host application decides what happens after confirmation.</p></UiDialog></Example>
+  </div>
+}
+
+/** Reusable explanatory patterns belong beside the data or decision they explain. */
+export function InformationExamples() {
+  return <div className="catalog-demo-stack">
+    <Example title="Section heading and contextual help" names="UiSectionHeading · UiInfoTip">
+      <UiSectionHeading title="Assignment" description="Keep the owner and review details together." action={<UiButton type="button">Change owner</UiButton>} />
+      <p>Each field can show a short explanation <UiInfoTip label="About contextual help">Click or press Enter to read help. Press Escape or click outside to close it.</UiInfoTip> without leaving the form.</p>
+    </Example>
+    <Example title="Information and action callouts" names="UiCallout">
+      <div className="catalog-information-grid">
+        <UiCallout title="Before you continue" tone="accent" action={<UiButton type="button">Review details</UiButton>}>The linked record has a pending change.</UiCallout>
+        <UiCallout title="Ready to share" tone="success">All required fields are complete.</UiCallout>
+        <UiCallout title="Review needed" tone="warning">One address has not been confirmed.</UiCallout>
+        <UiCallout title="Action unavailable" tone="danger">Your current role cannot approve this record.</UiCallout>
+      </div>
+    </Example>
+    <Example title="Actionable empty state" names="UiEmptyState">
+      <UiEmptyState title="No records yet" description="Create a record to start tracking this workflow." action={<UiButton type="button" variant="primary">Create record</UiButton>} />
+    </Example>
   </div>
 }
 

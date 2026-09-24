@@ -9,12 +9,15 @@ Import components from `@errogaht/erp-ui-kit`. Import `@errogaht/erp-ui-kit/styl
 | Forms | `UiField`, `UiInput`, `UiSelect`, `UiTextarea`, `UiChoice`, `UiCombobox`, `UiAsyncCombobox` | Labels, validation, native controls and searchable selectors. |
 | Navigation | `UiSegmented`, `UiTabs`, `UiPagination`, `UiPopoverMenu`, `UiDisclosure` | View switching and disclosure. |
 | Feedback | `UiBadge`, `UiNotice`, `UiProgress`, `UiSkeleton`, `UiEmpty`, `UiHelp`, `UiDialog` | State and guidance. |
+| Information | `UiInfoTip`, `UiCallout`, `UiEmptyState`, `UiSectionHeading` | Clickable contextual help, explanatory blocks, actionable empty states, and section titles. |
 | Records | `UiCard`, `UiPanel`, `UiAsidePanel`, `UiMetric`, `UiFacts`, `UiTable`, `UiItemRow`, `UiLineItem`, `UiValueCard`, `UiFile`, `UiTimeline` | Data and record structure. |
 | Inbox | `UiInboxCard`, `UiMessage`, `UiComposer`, `UiConversationCanvas`, `UiQuote`, `UiAttachmentLink`, `UiImagePreview`, `UiStatusLine`, `UiAvatar` | Conversations and message history. |
 | Audit | `UiHistoryEvent`, `UiChangeList`, `UiChangeRow`, `UiComparison` | Changes and before/after values. |
 | Icons | `UiIcon`, `UiBootstrapIcon` | Existing stroke icons and the complete pinned Bootstrap Icons set. |
 
 For icon discovery, use the [searchable gallery](https://errogaht.github.io/erp-ui-kit/#icons) or `npm run icons:search -- <concept>`. The search accepts English icon names and common concepts such as `chat`, `payment`, and `delivery`. `UiBootstrapIcon` accepts a typed official name; its CSS and font ship with the package.
+
+`UiInput`, `UiSelect`, `UiCombobox`, and `UiAsyncCombobox` share a 36px regular height and a 28px compact height (`density="compact"`). Use `UiField` for a matching label line, errors and `help={<UiInfoTip label="About this field">…</UiInfoTip>}`. `UiTextarea` is intentionally multiline. Place hints or errors below the control and align form rows by their label and control, not by the bottom of optional hint text.
 
 ## Agent decision path
 

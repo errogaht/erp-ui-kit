@@ -287,6 +287,7 @@ export function UiField({
   label,
   hint,
   error,
+  help,
   required = false,
   children,
   className = '',
@@ -294,6 +295,7 @@ export function UiField({
   label: string
   hint?: string
   error?: string
+  help?: ReactNode
   required?: boolean
   children: (bindings: FieldBindings) => ReactNode
   className?: string
@@ -302,10 +304,13 @@ export function UiField({
   const describedBy = error ? `${id}-error` : hint ? `${id}-hint` : undefined
   return (
     <div className={`ui-kit-field ${className}`.trim()}>
-      <label htmlFor={id}>
-        {label}
-        {required ? <span aria-hidden="true">{'\u00a0*'}</span> : null}
-      </label>
+      <div className="ui-kit-field__heading">
+        <label htmlFor={id}>
+          {label}
+          {required ? <span aria-hidden="true">{'\u00a0*'}</span> : null}
+        </label>
+        {help ? <span className="ui-kit-field__help">{help}</span> : null}
+      </div>
       {children({ id, describedBy, invalid: Boolean(error) })}
       {error ? (
         <small className="ui-kit-field__error" id={`${id}-error`}>
