@@ -39,7 +39,6 @@
 .ui-kit-ai-chat__header-title { display:grid; flex:1; min-width:0; }
 .ui-kit-ai-chat__header-title strong { overflow:hidden; font-size:14px; line-height:1.25; text-overflow:ellipsis; white-space:nowrap; }
 .ui-kit-ai-chat__header-title small { overflow:hidden; color:var(--ui-kit-muted); font-size:11px; text-overflow:ellipsis; white-space:nowrap; }
-.ui-kit-ai-chat__model select { max-width:170px; height:32px; padding:4px 8px; border:1px solid var(--ui-kit-line); border-radius:var(--ui-kit-radius); color:var(--ui-kit-ink); background:#fff; font-size:11px; }
 .ui-kit-ai-chat__transcript { display:flex; flex-direction:column; flex:1; min-height:0; overflow:auto; overscroll-behavior:contain; padding:24px clamp(18px,5%,48px); }
 .ui-kit-ai-chat__welcome { display:grid; align-content:center; justify-items:center; gap:10px; width:100%; max-width:620px; min-height:100%; margin:auto; text-align:center; }
 .ui-kit-ai-chat__welcome-mark { display:grid; width:48px; height:48px; place-items:center; border:1px solid #c9dce5; border-radius:12px; color:var(--ui-kit-accent); background:var(--ui-kit-accent-soft); font-size:24px; }
@@ -101,7 +100,6 @@
  .ui-kit-ai-chat__mobile-menu,.ui-kit-ai-chat__mobile-close { display:grid; width:29px; height:29px; flex:0 0 29px; place-items:center; border:1px solid var(--ui-kit-line); border-radius:3px; color:var(--ui-kit-ink); background:#fff; }
  .ui-kit-ai-chat__header { min-height:58px; padding:8px 12px; }
  .ui-kit-ai-chat__header-title small { display:none; }
- .ui-kit-ai-chat__model select { max-width:125px; }
  .ui-kit-ai-chat__transcript { padding:13px 15px; }
  .ui-kit-ai-chat__message { gap:8px; padding:13px 0; }
  .ui-kit-ai-chat__composer-wrap { padding:8px 10px 7px; }
@@ -112,5 +110,6 @@
 /* Model and effort are independent controlled choices; wrap before they squeeze the title. */
 .ui-kit-ai-chat__settings { display:flex; align-items:end; gap:7px; flex-wrap:wrap; justify-content:flex-end; }
 .ui-kit-ai-chat__model { display:grid; gap:2px; color:var(--ui-kit-muted); font-size:10px; }
-.ui-kit-ai-chat__model select { width:142px; max-width:142px; }
-@media (max-width:850px) { .ui-kit-ai-chat__header { flex-wrap:wrap; }.ui-kit-ai-chat__settings { width:100%; justify-content:flex-start; }.ui-kit-ai-chat__model { flex:1; min-width:118px; }.ui-kit-ai-chat__model select { width:100%; max-width:none; } }
+/* Model and effort use the same 36px native select geometry as other Kit forms. */
+.ui-kit-ai-chat__model .ui-kit-control { width:142px; max-width:142px; }
+@media (max-width:850px) { .ui-kit-ai-chat__header { flex-wrap:wrap; }.ui-kit-ai-chat__settings { width:100%; justify-content:flex-start; }.ui-kit-ai-chat__model { flex:1; min-width:118px; }.ui-kit-ai-chat__model .ui-kit-control { width:100%; max-width:none; } }

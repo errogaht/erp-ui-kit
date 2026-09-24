@@ -34,7 +34,7 @@ const statuses: UiTaskStatusOption[] = [
 />
 ```
 
-`UiTaskList` filters, sorts and paginates the supplied `tasks` array in the browser. Pass the full intended list; for a server-paged source, compose a host-specific list around the same task data contract. The `statuses` array should cover every task status, including board columns; statuses with `tone: 'success'` count as completed. Optional bulk changes call `onBulkStatusChange(ids, status)`.
+`UiTaskList` filters, sorts and paginates the supplied `tasks` array in the browser. Pass the full intended list; for a server-paged source, compose a host-specific list around the same task data contract. The `statuses` array should cover every task status, including board columns; statuses with `tone: 'success'` count as completed. Optional bulk changes call `onBulkStatusChange(ids, status)`. In narrow containers, rows become labeled cards with the same row selection and page selection controls.
 
 `UiTaskDetail` shows title, status, priority, assignee, due date, description, subtasks, attachments, comments, audit events and worklogs. Optional callbacks enable editing. The host validates transitions, permission checks, uploads and persistence. Due dates and timestamps should be ISO strings.
 

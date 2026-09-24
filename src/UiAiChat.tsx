@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { UiBootstrapIcon } from './UiBootstrapIcon'
 import { UiButton } from './Ui'
+import { UiSelect } from './UiControls'
 import './ui-ai-chat.css'
 
 export type UiAiChatConversation = { id: string; title: string; updatedAt?: string; pinned?: boolean }
@@ -76,9 +77,12 @@ export function UiAiChat({
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [dragging, setDragging] = useState(false)
   const [showJump, setShowJump] = useState(false)
+  const [narrowLayout, setNarrowLayout] = useState(false)
   const fileInput = useRef<HTMLInputElement>(null)
   const textInput = useRef<HTMLTextAreaElement>(null)
   const transcript = useRef<HTMLDivElement>(null)
+  const historyOpener = useRef<HTMLButtonElement>(null)
+  const historyCloser = useRef<HTMLButtonElement>(null)
   const nearBottom = useRef(true)
   const dropDepth = useRef(0)
   const id = useId()
@@ -101,6 +105,29 @@ export function UiAiChat({
     const timer = window.setTimeout(() => setCopiedId(null), 1800)
     return () => window.clearTimeout(timer)
   }, [copiedId])
+  // The off-canvas history must leave the keyboard order while closed on narrow screens.
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 760px)')
+    const update = () => setNarrowLayout(query.matches)
+    update()
+    query.addEventListener('change', update)
+    return () => query.removeEventListener('change', update)
+  }, [])
+  useEffect(() => {
+    if (narrowLayout && sidebarOpen) historyCloser.current?.focus()
+  }, [narrowLayout, sidebarOpen])
+  const closeHistory = () => { setSidebarOpen(false); if (narrowLayout) historyOpener.current?.focus() }
+  // Keep Tab inside the mobile drawer until the reader selects a chat or closes it.
+  const historyKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (!narrowLayout || !sidebarOpen) return
+    if (event.key === 'Escape') { event.preventDefault(); closeHistory(); return }
+    if (event.key !== 'Tab') return
+    const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), summary, a[href]')).filter(node => node.getClientRects().length > 0)
+    const first = controls[0], last = controls.at(-1)
+    if (!first || !last) return
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus() }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
+  }
 
   const appendFiles = (incoming: FileList | readonly File[]) => {
     const next = Array.from(incoming)
@@ -130,14 +157,14 @@ export function UiAiChat({
   }
   const selectConversation = (conversationId: string) => {
     onSelectConversation(conversationId)
-    setSidebarOpen(false)
+    closeHistory()
   }
 
   return <section aria-label={title} className={`ui-kit-ai-chat ${sidebarOpen ? 'ui-kit-ai-chat--sidebar-open' : ''} ${className}`.trim()}>
-    {sidebarOpen && <button aria-label="Close conversation history" className="ui-kit-ai-chat__scrim" onClick={() => setSidebarOpen(false)} type="button" />}
-    <aside aria-label="Conversation history" className="ui-kit-ai-chat__sidebar">
-      <div className="ui-kit-ai-chat__sidebar-top"><strong><UiBootstrapIcon name="stars" /> {title}</strong><button aria-label="Close history" className="ui-kit-ai-chat__mobile-close" onClick={() => setSidebarOpen(false)} type="button"><UiBootstrapIcon name="x-lg" /></button></div>
-      <UiButton className="ui-kit-ai-chat__new" onClick={() => { onNewConversation(); setSidebarOpen(false) }} type="button" variant="primary"><UiBootstrapIcon name="plus-lg" /> New chat</UiButton>
+    {sidebarOpen && <button aria-label="Close conversation history" className="ui-kit-ai-chat__scrim" onClick={closeHistory} type="button" />}
+    <aside aria-label="Conversation history" className="ui-kit-ai-chat__sidebar" inert={narrowLayout && !sidebarOpen} onKeyDown={historyKeyDown}>
+      <div className="ui-kit-ai-chat__sidebar-top"><strong><UiBootstrapIcon name="stars" /> {title}</strong><button aria-label="Close history" className="ui-kit-ai-chat__mobile-close" onClick={closeHistory} ref={historyCloser} type="button"><UiBootstrapIcon name="x-lg" /></button></div>
+      <UiButton className="ui-kit-ai-chat__new" onClick={() => { onNewConversation(); closeHistory() }} type="button" variant="primary"><UiBootstrapIcon name="plus-lg" /> New chat</UiButton>
       <label className="ui-kit-ai-chat__search"><UiBootstrapIcon name="search" /><span className="ui-kit-ai-chat__sr-only">Search conversations</span><input aria-label="Search conversations" onChange={event => setQuery(event.target.value)} placeholder="Search conversations" type="search" value={query} /></label>
       <div className="ui-kit-ai-chat__history">
         {visibleConversations.length ? visibleConversations.map(conversation => <div className={`ui-kit-ai-chat__conversation ${conversation.id === activeConversationId ? 'is-active' : ''}`} key={conversation.id}>
@@ -149,7 +176,7 @@ export function UiAiChat({
       </div>
     </aside>
     <div className="ui-kit-ai-chat__main" onDragEnter={event => { if (event.dataTransfer.types.includes('Files')) { event.preventDefault(); dropDepth.current += 1; setDragging(true) } }} onDragLeave={event => { if (dragging) { event.preventDefault(); dropDepth.current -= 1; if (dropDepth.current <= 0) { dropDepth.current = 0; setDragging(false) } } }} onDragOver={event => { if (event.dataTransfer.types.includes('Files')) event.preventDefault() }} onDrop={event => { event.preventDefault(); dropDepth.current = 0; setDragging(false); if (!disabled) appendFiles(event.dataTransfer.files) }}>
-      <header className="ui-kit-ai-chat__header"><button aria-label="Open conversation history" className="ui-kit-ai-chat__mobile-menu" onClick={() => setSidebarOpen(true)} type="button"><UiBootstrapIcon name="list" /></button><div className="ui-kit-ai-chat__header-title"><strong>{conversations.find(item => item.id === activeConversationId)?.title ?? title}</strong><small>{isGenerating ? 'Generating response…' : description}</small></div><div className="ui-kit-ai-chat__settings">{models.length > 0 && <label className="ui-kit-ai-chat__model"><span>Model</span><select aria-label="Model" disabled={disabled || isGenerating || !onModelChange} onChange={event => onModelChange?.(event.target.value)} value={selectedModelId ?? models[0].id}>{models.map(model => <option key={model.id} value={model.id}>{model.label}</option>)}</select></label>}{efforts.length > 0 && <label className="ui-kit-ai-chat__model"><span>Effort</span><select aria-label="Effort" disabled={disabled || isGenerating || !onEffortChange} onChange={event => onEffortChange?.(event.target.value)} value={selectedEffortId ?? efforts[0].id}>{efforts.map(effort => <option key={effort.id} value={effort.id}>{effort.label}</option>)}</select></label>}</div></header>
+      <header className="ui-kit-ai-chat__header"><button aria-label="Open conversation history" className="ui-kit-ai-chat__mobile-menu" onClick={() => setSidebarOpen(true)} ref={historyOpener} type="button"><UiBootstrapIcon name="list" /></button><div className="ui-kit-ai-chat__header-title"><strong>{conversations.find(item => item.id === activeConversationId)?.title ?? title}</strong><small>{isGenerating ? 'Generating response…' : description}</small></div><div className="ui-kit-ai-chat__settings">{models.length > 0 && <label className="ui-kit-ai-chat__model"><span>Model</span><UiSelect aria-label="Model" disabled={disabled || isGenerating || !onModelChange} onChange={event => onModelChange?.(event.target.value)} value={selectedModelId ?? models[0].id}>{models.map(model => <option key={model.id} value={model.id}>{model.label}</option>)}</UiSelect></label>}{efforts.length > 0 && <label className="ui-kit-ai-chat__model"><span>Effort</span><UiSelect aria-label="Effort" disabled={disabled || isGenerating || !onEffortChange} onChange={event => onEffortChange?.(event.target.value)} value={selectedEffortId ?? efforts[0].id}>{efforts.map(effort => <option key={effort.id} value={effort.id}>{effort.label}</option>)}</UiSelect></label>}</div></header>
       <div aria-label="Messages" aria-live="polite" className="ui-kit-ai-chat__transcript" onScroll={event => { const node = event.currentTarget; nearBottom.current = node.scrollHeight - node.scrollTop - node.clientHeight < 100; setShowJump(!nearBottom.current) }} ref={transcript} role="log">
         {messages.length === 0 ? <div className="ui-kit-ai-chat__welcome"><span className="ui-kit-ai-chat__welcome-mark"><UiBootstrapIcon name="stars" /></span><h2>{title}</h2><p>{description}</p>{suggestions.length > 0 && <div className="ui-kit-ai-chat__suggestions">{suggestions.map(prompt => <button disabled={disabled || isGenerating} key={prompt} onClick={() => { setDraft(prompt); textInput.current?.focus() }} type="button">{prompt}<UiBootstrapIcon name="arrow-up-right" /></button>)}</div>}</div> : messages.map(message => <article aria-label={message.role === 'user' ? 'Your message' : message.role === 'assistant' ? 'Assistant response' : 'System message'} className={`ui-kit-ai-chat__message ui-kit-ai-chat__message--${message.role}`} key={message.id}>
           <span aria-hidden="true" className="ui-kit-ai-chat__avatar"><UiBootstrapIcon name={message.role === 'user' ? 'person-fill' : message.role === 'assistant' ? 'stars' : 'info-circle'} /></span>

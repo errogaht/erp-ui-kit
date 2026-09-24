@@ -74,8 +74,8 @@ export function UiTaskDetail({ task, statuses, people = [], comments = [], activ
           ['comments', 'Comments', comments.length],
           ['activity', 'Audit', activity.length],
           ['worklog', 'Worklog', worklogs.length],
-        ] as const).map(([value, label, count]) => <button aria-controls={`${tabId}-${value}`} aria-selected={tab === value} id={`${tabId}-${value}-tab`} key={value} onClick={() => setTab(value)} onKeyDown={handleTabKey} role="tab" tabIndex={tab === value ? 0 : -1} type="button">{label} <span>{count}</span></button>)}</div>
-        <div aria-labelledby={`${tabId}-${tab}-tab`} className="ui-kit-task-detail__activity-panel" id={`${tabId}-${tab}`} role="tabpanel">
+        ] as const).map(([value, label, count]) => <button aria-controls={`${tabId}-panel`} aria-selected={tab === value} id={`${tabId}-${value}-tab`} key={value} onClick={() => setTab(value)} onKeyDown={handleTabKey} role="tab" tabIndex={tab === value ? 0 : -1} type="button">{label} <span>{count}</span></button>)}</div>
+        <div aria-labelledby={`${tabId}-${tab}-tab`} className="ui-kit-task-detail__activity-panel" id={`${tabId}-panel`} role="tabpanel">
           <div className="ui-kit-task-detail__feed">{([
             ...(tab === 'all' || tab === 'comments' ? comments.map(comment => ({ kind: 'comment' as const, at: comment.createdAt, item: comment })) : []),
             ...(tab === 'all' || tab === 'activity' ? activity.map(event => ({ kind: 'audit' as const, at: event.at, item: event })) : []),

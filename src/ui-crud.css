@@ -1,5 +1,5 @@
 /* A reusable admin screen combines kit controls without owning data or backend behavior. */
-.ui-kit-crud { min-width:0; border:1px solid var(--ui-kit-line); border-radius:var(--ui-kit-radius); color:var(--ui-kit-ink); background:var(--ui-kit-panel); font:12px/1.5 Inter,system-ui,sans-serif; }
+.ui-kit-crud { container-type:inline-size; min-width:0; border:1px solid var(--ui-kit-line); border-radius:var(--ui-kit-radius); color:var(--ui-kit-ink); background:var(--ui-kit-panel); font:12px/1.5 Inter,system-ui,sans-serif; }
 .ui-kit-crud * { box-sizing:border-box; }
 .ui-kit-crud__header,.ui-kit-crud__toolbar,.ui-kit-crud__bulk,.ui-kit-crud__footer { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; padding:13px 16px; }
 .ui-kit-crud__header { border-bottom:1px solid var(--ui-kit-line); }
@@ -8,7 +8,8 @@
 .ui-kit-crud__toolbar { justify-content:flex-start; }
 .ui-kit-crud__toolbar>label { position:relative; width:min(300px,100%); }
 .ui-kit-crud__toolbar>label>.ui-kit-bootstrap-icon { position:absolute; top:50%; left:10px; transform:translateY(-50%); color:var(--ui-kit-muted); }
-.ui-kit-crud__toolbar>label input { padding-left:32px; width:100%; }
+/* Match the shared control selector's specificity so the search icon has real space. */
+.ui-kit-crud__toolbar>label:first-child .ui-kit-control:not([type='checkbox']):not([type='radio']) { padding-left:32px; width:100%; }
 .ui-kit-crud__toolbar>span { color:var(--ui-kit-muted); }
 .ui-kit-crud__toolbar>div { display:flex; gap:6px; margin-left:auto; }
 .ui-kit-crud__bulk { justify-content:flex-start; border-block:1px solid var(--ui-kit-line); background:var(--ui-kit-accent-soft); }
@@ -30,3 +31,31 @@
 .ui-kit-crud__form>.ui-kit-crud__checkbox { display:flex; align-items:center; gap:10px; }
 @media(max-width:650px) { .ui-kit-crud__form { grid-template-columns:1fr; }.ui-kit-crud__toolbar>div { margin-left:0; }.ui-kit-crud__footer { justify-content:center; } }
 .ui-kit-crud__form-error { grid-column:1/-1; margin:0; padding:7px 9px; border:1px solid #e7b4af; color:#8f3027; background:#fff1ee; font-size:11px; }
+/* Column sorting remains reachable when the desktop table header becomes cards. */
+.ui-kit-crud__mobile-label { display:none; }
+.ui-kit-crud__toolbar>.ui-kit-crud__mobile-select { display:none; }
+.ui-kit-crud__mobile-sort,.ui-kit-crud__mobile-direction { display:none; }
+@container (max-width:650px) {
+  .ui-kit-crud__toolbar { display:grid; grid-template-columns:auto minmax(0,1fr) 36px; gap:9px; }
+  .ui-kit-crud__toolbar>label:first-child { grid-column:1/-1; width:100%; }
+  .ui-kit-crud__toolbar>span { grid-column:1; }
+  .ui-kit-crud__toolbar>.ui-kit-crud__mobile-select { grid-column:2/-1; display:flex; align-items:center; gap:5px; width:auto; color:var(--ui-kit-muted); font-size:10px; }
+  .ui-kit-crud__toolbar>.ui-kit-crud__mobile-sort { grid-column:1/3; display:grid; gap:4px; width:100%; min-width:0; color:var(--ui-kit-muted); font-size:10px; font-weight:700; }
+  .ui-kit-crud__mobile-direction { grid-column:3; display:grid; align-self:end; width:36px; height:36px; place-items:center; border:1px solid var(--ui-kit-line); border-radius:var(--ui-kit-radius); color:var(--ui-kit-accent); background:var(--ui-kit-panel); cursor:pointer; }
+  .ui-kit-crud__toolbar>div { grid-column:1/-1; width:100%; margin-left:0; }
+  .ui-kit-crud__table,.ui-kit-crud__table .ui-kit-table-wrap { overflow:visible; }
+  .ui-kit-crud__table .ui-kit-table-wrap { border:0; }
+  .ui-kit-crud__table .ui-kit-table-wrap table { display:block; width:100%; min-width:0; }
+  .ui-kit-crud__table thead { display:none; }
+  .ui-kit-crud__table tbody { display:grid; gap:9px; padding:10px; }
+  .ui-kit-crud__table tbody tr { display:grid; grid-template-columns:24px minmax(0,1fr); gap:8px; min-width:0; padding:11px; border:1px solid var(--ui-kit-line); border-radius:var(--ui-kit-radius); }
+  .ui-kit-crud__table tbody td { display:block; min-width:0; padding:0; border:0; overflow-wrap:anywhere; }
+  .ui-kit-crud__table tbody .ui-kit-crud__select-cell { grid-column:1; padding-top:2px; }
+  .ui-kit-crud__table tbody td:nth-child(2) { grid-column:2; font-weight:700; }
+  .ui-kit-crud__table tbody .ui-kit-crud__mobile-label { display:block; margin-bottom:2px; color:var(--ui-kit-muted); font-size:10px; font-weight:700; }
+  .ui-kit-crud__table tbody td:nth-child(n+3) { grid-column:1/-1; }
+  .ui-kit-crud__table tbody .ui-kit-crud__actions-cell { padding-top:7px; border-top:1px solid var(--ui-kit-line); }
+  .ui-kit-crud__row-actions { gap:15px; }
+  .ui-kit-crud__row-actions button { min-height:30px; }
+  .ui-kit-crud__table tbody .ui-kit-crud__empty { grid-column:1/-1; }
+}

@@ -62,17 +62,21 @@ export function UiPopoverMenu({ label, icon, children, menuRef, disabled = false
       setPosition({ left: Math.max(8, Math.min(rect.right - width, window.innerWidth - width - 8)), top: rect.bottom + height + 8 <= window.innerHeight ? rect.bottom + 5 : Math.max(8, rect.top - height - 5) })
     }
     const closeOutside = (event: PointerEvent) => { if (!summaryRef.current?.contains(event.target as Node) && !panelRef.current?.contains(event.target as Node)) setOpen(false) }
+    const closeOnFocusAway = (event: FocusEvent) => { if (!summaryRef.current?.contains(event.target as Node) && !panelRef.current?.contains(event.target as Node)) setOpen(false) }
     const closeEscape = (event: KeyboardEvent) => { if (event.key === 'Escape') { setOpen(false); summaryRef.current?.focus() } }
     place()
+    // Portaled actions are outside the details tree; focus them explicitly for keyboard users.
+    panelRef.current?.querySelector<HTMLElement>('button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])')?.focus()
     window.addEventListener('resize', place)
     window.addEventListener('scroll', place, true)
     document.addEventListener('pointerdown', closeOutside)
+    document.addEventListener('focusin', closeOnFocusAway)
     document.addEventListener('keydown', closeEscape)
-    return () => { window.removeEventListener('resize', place); window.removeEventListener('scroll', place, true); document.removeEventListener('pointerdown', closeOutside); document.removeEventListener('keydown', closeEscape) }
+    return () => { window.removeEventListener('resize', place); window.removeEventListener('scroll', place, true); document.removeEventListener('pointerdown', closeOutside); document.removeEventListener('focusin', closeOnFocusAway); document.removeEventListener('keydown', closeEscape) }
   }, [open])
   return <details className={`ui-kit-popover-menu ${className}`.trim()} ref={menuRef} {...props} open={open}>
     <summary aria-label={label} aria-disabled={disabled} aria-expanded={open} title={label} ref={summaryRef} onClick={event => { event.preventDefault(); if (!disabled) { setOpen(value => !value); onSummaryClick?.(event) } }} onKeyDown={event => { if (disabled && (event.key === 'Enter' || event.key === ' ')) event.preventDefault() }}>{icon}</summary>
-    {open && createPortal(<div className="ui-kit-surface ui-kit-popover-menu__content" onClick={event => { if ((event.target as HTMLElement).closest('button,a')) setOpen(false) }} ref={panelRef} style={{ position: 'fixed', top: position.top, left: position.left, right: 'auto', bottom: 'auto', zIndex: 10000 }}>{children}</div>, document.body)}
+    {open && createPortal(<div className="ui-kit-surface ui-kit-popover-menu__content" onClick={event => { if ((event.target as HTMLElement).closest('button,a')) { setOpen(false); summaryRef.current?.focus() } }} ref={panelRef} style={{ position: 'fixed', top: position.top, left: position.left, right: 'auto', bottom: 'auto', zIndex: 10000 }}>{children}</div>, document.body)}
   </details>
 }
 

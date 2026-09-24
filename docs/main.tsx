@@ -32,13 +32,13 @@ function Catalog() {
         <a href="#components">All {componentCount} components <span>↗</span></a>
         {sections.map(section => <a href={`#${section.id}`} key={section.id}>{section.label}<span>↗</span></a>)}
       </nav>
-      <div className="site-sidebar-foot"><span className="site-version">v0.6.1</span><a href="https://github.com/errogaht/erp-ui-kit">GitHub ↗</a></div>
+      <div className="site-sidebar-foot"><span className="site-version">v0.6.2</span><a href="https://github.com/errogaht/erp-ui-kit">GitHub ↗</a></div>
     </aside>
     <main id="top">
       <header className="site-hero"><div className="site-kicker">COMPONENT LIBRARY / REACT 19</div><h1>Every part of an<br/><em>operational interface.</em></h1><p>{componentCount} reusable React components, from inputs and records to a complete conversation workspace and audit trail. All examples use fictional data.</p><div className="site-hero-actions"><a href="#conversation">Explore the chat workspace ↓</a><a href="#components">View all components</a><a href="https://github.com/errogaht/erp-ui-kit/blob/main/AGENTS.md">Agent guide ↗</a></div></header>
       <section className="site-section site-section--index" id="components"><SectionHeader number="INDEX" title={`All ${componentCount} components`} detail="Select a name to jump to its working example. Every public component is listed here."/><div className="catalog-index">{sections.map(section => <div className="catalog-index__group" key={section.id}><h3>{section.label}<small>{groups[section.label].length}</small></h3><div>{groups[section.label].map(name=><a href={`#${section.id}`} key={name}>{name}</a>)}</div></div>)}</div><p className="catalog-index__note">The public <code>UiInboxSignal</code> type describes inbox badges; it has no visual rendering of its own.</p></section>
       {sections.map((section,index) => <section className="site-section" id={section.id} key={section.id}><SectionHeader number={String(index+1).padStart(2,'0')} title={section.label} detail={section.detail}/><section.component/></section>)}
-      <div className="site-install"><div><span className="site-kicker">START BUILDING</span><h2>Use the same system<br/>across your projects.</h2><p>Inspect the source and agent guide, then install a pinned release.</p></div><code>npm install github:errogaht/erp-ui-kit#v0.6.1</code></div>
+      <div className="site-install"><div><span className="site-kicker">START BUILDING</span><h2>Use the same system<br/>across your projects.</h2><p>Inspect the source and agent guide, then install a pinned release.</p></div><code>npm install github:errogaht/erp-ui-kit#v0.6.2</code></div>
       <footer className="site-footer"><span>ERP UI Kit · React components for operational tools</span><a href="https://github.com/errogaht/erp-ui-kit">Source on GitHub ↗</a></footer>
     </main>
   </div>

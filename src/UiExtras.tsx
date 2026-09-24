@@ -20,11 +20,15 @@ export function UiBadgeSelect({ options, value, onChange, label = 'Status', disa
     if (!open) return
     const place = () => { const rect = root.current?.getBoundingClientRect(); if (rect) { const height = panel.current?.offsetHeight ?? 120; setPosition({ top: rect.bottom + height + 8 <= window.innerHeight ? rect.bottom + 4 : Math.max(8, rect.top - height - 4), left: Math.max(8, Math.min(rect.left, window.innerWidth - rect.width - 8)), width: rect.width }) } }
     const close = (event: PointerEvent) => { if (!root.current?.contains(event.target as Node) && !panel.current?.contains(event.target as Node)) setOpen(false) }
+    const closeOnFocusAway = (event: FocusEvent) => { if (!root.current?.contains(event.target as Node) && !panel.current?.contains(event.target as Node)) setOpen(false) }
     place()
+    // The menu is portaled, so transfer focus into it and close when focus leaves both trees.
+    ;(panel.current?.querySelector<HTMLButtonElement>('[aria-selected="true"]') ?? panel.current?.querySelector<HTMLButtonElement>('[role="option"]'))?.focus()
     document.addEventListener('pointerdown', close)
+    document.addEventListener('focusin', closeOnFocusAway)
     window.addEventListener('resize', place)
     window.addEventListener('scroll', place, true)
-    return () => { document.removeEventListener('pointerdown', close); window.removeEventListener('resize', place); window.removeEventListener('scroll', place, true) }
+    return () => { document.removeEventListener('pointerdown', close); document.removeEventListener('focusin', closeOnFocusAway); window.removeEventListener('resize', place); window.removeEventListener('scroll', place, true) }
   }, [open])
   const choose = (next: string) => { onChange(next); setOpen(false); root.current?.querySelector('button')?.focus() }
   const keyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -40,7 +44,7 @@ export function UiBadgeSelect({ options, value, onChange, label = 'Status', disa
     const next = event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1 : index < 0 ? event.key === 'ArrowUp' ? buttons.length - 1 : 0 : (index + (event.key === 'ArrowUp' ? buttons.length - 1 : 1)) % buttons.length
     buttons[next]?.focus()
   }
-  return <div className={`ui-kit-badge-select ${className}`.trim()} onKeyDown={keyDown} ref={root}><button aria-controls={listId} aria-expanded={open} aria-haspopup="listbox" aria-label={label} disabled={disabled} onClick={() => setOpen(current => !current)} type="button"><UiBadge tone={current?.tone || 'neutral'}>{current?.label || value}</UiBadge><UiBootstrapIcon name="chevron-down" /></button>{open && createPortal(<div aria-label={label} className="ui-kit-surface ui-kit-badge-select__menu" id={listId} ref={panel} role="listbox" style={{ position: 'fixed', top: position.top, left: position.left, minWidth: position.width, zIndex: 10000 }}>{options.map(option => <button aria-selected={option.value === value} data-value={option.value} key={option.value} onClick={() => choose(option.value)} role="option" type="button"><UiBadge tone={option.tone || 'neutral'}>{option.label}</UiBadge></button>)}</div>, document.body)}</div>
+  return <div className={`ui-kit-badge-select ${className}`.trim()} onKeyDown={keyDown} ref={root}><button aria-controls={listId} aria-expanded={open} aria-haspopup="listbox" aria-label={label} disabled={disabled} onClick={() => setOpen(current => !current)} type="button"><UiBadge tone={current?.tone || 'neutral'}>{current?.label || value}</UiBadge><UiBootstrapIcon name="chevron-down" /></button>{open && createPortal(<div aria-label={label} className="ui-kit-surface ui-kit-badge-select__menu" id={listId} onKeyDown={keyDown} ref={panel} role="listbox" style={{ position: 'fixed', top: position.top, left: position.left, minWidth: position.width, zIndex: 10000 }}>{options.map(option => <button aria-selected={option.value === value} data-value={option.value} key={option.value} onClick={() => choose(option.value)} role="option" type="button"><UiBadge tone={option.tone || 'neutral'}>{option.label}</UiBadge></button>)}</div>, document.body)}</div>
 }
 
 /** A single photo field accepts picker and drop, then lets the host persist or remove the File. */
