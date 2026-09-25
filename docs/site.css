@@ -8,10 +8,10 @@
 .catalog-information-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 @media (max-width: 750px) { .catalog-information-grid { grid-template-columns: 1fr; } }
 /* Chat menus are portaled so the clipped workspace cannot hide their contents. */
-.catalog-chat .ui-kit-composer { grid-template-columns:30px 30px minmax(0,1fr) 30px auto; }
+.catalog-chat .ui-kit-composer { grid-template-columns:36px 36px minmax(0,1fr) 36px auto; }
 .catalog-chat__menu-option { display:flex; align-items:center; gap:8px; width:100%; min-height:30px; padding:6px 8px; border:0; border-radius:3px; color:var(--ui-kit-ink); background:transparent; text-align:left; font:inherit; cursor:pointer; }
 .catalog-chat__menu-option:hover { background:var(--ui-kit-accent-soft); }
-@media(max-width:480px){ .catalog-chat .ui-kit-composer { grid-template-columns:30px 30px minmax(0,1fr) 30px; }.catalog-chat .ui-kit-composer>.ui-kit-button { grid-column:1/-1; } }
+@media(max-width:480px){ .catalog-chat .ui-kit-composer { grid-template-columns:36px 36px minmax(0,1fr) 36px; }.catalog-chat .ui-kit-composer>.ui-kit-button { grid-column:1/-1; } }
 .catalog-admin-layout { display:grid; grid-template-columns:210px minmax(0,1fr); gap:12px; }
 .catalog-admin-layout>.ui-kit-sidebar-nav { width:100%; }
 @media(max-width:750px){ .catalog-admin-layout { grid-template-columns:1fr; } }
@@ -38,6 +38,12 @@
 .catalog-chat__canvas .ui-kit-image-preview { width: 158px; }
 .catalog-chat__canvas .ui-kit-image-preview img { height: auto; }
 .catalog-chat__date { padding: 3px 8px; border: 1px solid var(--ui-kit-line); border-radius: 10px; background: var(--ui-kit-panel); }
+/* Keep the avatar, person and channel as one identity; the record belongs on a quieter second line. */
+.catalog-chat__identity { display:flex; align-items:center; gap:9px; min-width:0; }
+.catalog-chat__identity-copy { display:grid; gap:3px; min-width:0; }
+.catalog-chat__identity-primary { display:flex; align-items:center; flex-wrap:wrap; gap:5px 8px; min-width:0; }
+.catalog-chat__thread-header .catalog-chat__identity-primary strong { margin:0; font-size:13px; line-height:1.25; }
+.catalog-chat__identity-context { color:var(--ui-kit-muted); font-size:10px; line-height:1.3; }
 /* At laptop widths the linked case sits below the thread; pair its facts with the two actions. */
 @media (max-width: 1390px) and (min-width: 751px) {
   .catalog-chat__details { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }

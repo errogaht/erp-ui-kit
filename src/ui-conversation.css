@@ -7,7 +7,8 @@
 .ui-kit-disclosure > summary:hover { background: var(--ui-kit-accent-soft); }
 .ui-kit-disclosure > summary > span { flex: 1; }
 .ui-kit-disclosure > summary > b { min-width: 18px; padding: 1px 4px; border-radius: var(--ui-kit-radius); color: #fff; background: var(--ui-kit-accent); text-align: center; font-size: 10px; }
-.ui-kit-disclosure__body { padding: 0 8px 8px; }
+/* The open header keeps a visible gutter above its first badge or control, including on hover. */
+.ui-kit-disclosure__body { padding: 8px; }
 .ui-kit-quote { display: grid; gap: 2px; min-width: 0; margin: 6px 0; padding: 6px 8px; border-left: 3px solid var(--ui-kit-accent); color: var(--ui-kit-ink); background: var(--ui-kit-accent-soft); overflow-wrap: anywhere; }
 .ui-kit-quote small { color: var(--ui-kit-muted); font-size: 10px; font-weight: 700; }
 .ui-kit-attachment-link { display: inline-flex; max-width: 100%; align-items: center; gap: 8px; padding: 7px 8px; border: 1px solid var(--ui-kit-line); border-radius: var(--ui-kit-radius); color: var(--ui-kit-accent); background: var(--ui-kit-panel); text-decoration: none; overflow-wrap: anywhere; }
@@ -44,10 +45,11 @@
 .ui-kit-popover-menu > summary[aria-disabled='true'] { cursor: not-allowed; opacity: .5; }
 .ui-kit-popover-menu > summary svg { width: 17px; height: 17px; }
 .ui-kit-popover-menu__content { position: absolute; z-index: 10; right: 0; bottom: calc(100% + 5px); min-width: 190px; padding: 7px; border: 1px solid var(--ui-kit-line-strong); border-radius: var(--ui-kit-radius); color: var(--ui-kit-ink); background: var(--ui-kit-panel); box-shadow: 0 6px 18px #22323b24; }
-/* The composer uses the same horizontal inset as conversation headers and message canvases. */
-.ui-kit-composer { display: grid; grid-template-columns: 30px minmax(0, 1fr) 30px auto; align-items: end; gap: 5px; min-width: 0; padding: 8px 12px; border-top: 1px solid var(--ui-kit-line); background: var(--ui-kit-subtle); }
-.ui-kit-composer > .ui-kit-button { min-height: 30px; }
-.ui-kit-composer .ui-kit-popover-menu { align-self: end; }
+/* Composer controls share the Kit's 36px input height and the conversation's horizontal inset. */
+.ui-kit-composer { display: grid; grid-template-columns: 36px minmax(0, 1fr) 36px auto; align-items: center; gap: 5px; min-width: 0; padding: 8px 12px; border-top: 1px solid var(--ui-kit-line); background: var(--ui-kit-subtle); }
+.ui-kit-composer .ui-kit-icon-button,
+.ui-kit-composer .ui-kit-popover-menu > summary { width: 36px; height: 36px; }
+.ui-kit-composer > .ui-kit-button { min-height: 36px; }
 /* A low-contrast grid gives message canvases texture without competing with message boundaries. */
 .ui-kit-surface .ui-kit-conversation-canvas { background: var(--ui-kit-bg); background-image: linear-gradient(#e8edf0 1px, transparent 1px), linear-gradient(90deg, #e8edf0 1px, transparent 1px); background-size: 24px 24px; }
 /* Reusable channel and optional send flags live in the same floating layer as composer actions. */

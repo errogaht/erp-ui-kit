@@ -40,7 +40,8 @@ export function ChatWorkspace() {
       <UiDisclosure label="Inbox filters" count={2}><UiInline><UiBadge tone="warning">Needs reply</UiBadge><UiBadge tone="success">Resolved</UiBadge></UiInline></UiDisclosure>
     </div>
     <div className="catalog-chat__thread">
-      <UiSplit className="catalog-chat__thread-header"><UiInline><UiAvatar initials={isAvery?'AS':'JL'} tone="accent"/><div><strong>{isAvery?'Avery Stone':'Jordan Lee'}</strong><UiStatusLine><UiBadge tone={isAvery?'telegram':'whatsapp'}>{isAvery?'Telegram':'WhatsApp'}</UiBadge><span>{isAvery?'CASE-1042 · North team':'CASE-1043 · West team'}</span></UiStatusLine></div></UiInline><UiPopoverMenu label="Conversation actions" icon={<UiBootstrapIcon name="sliders"/>}><UiButton type="button" variant="quiet">Mark for review</UiButton></UiPopoverMenu></UiSplit>
+      {/* The person and channel share the primary row; the linked record stays secondary. */}
+      <UiSplit className="catalog-chat__thread-header"><div className="catalog-chat__identity"><UiAvatar initials={isAvery?'AS':'JL'} tone="accent"/><div className="catalog-chat__identity-copy"><div className="catalog-chat__identity-primary"><strong>{isAvery?'Avery Stone':'Jordan Lee'}</strong><UiBadge tone={isAvery?'telegram':'whatsapp'}>{isAvery?'Telegram':'WhatsApp'}</UiBadge></div><span className="catalog-chat__identity-context">{isAvery?'CASE-1042 · North team':'CASE-1043 · West team'}</span></div></div><UiPopoverMenu label="Conversation actions" icon={<UiBootstrapIcon name="sliders"/>}><UiButton type="button" variant="quiet">Mark for review</UiButton></UiPopoverMenu></UiSplit>
       <UiConversationCanvas className="catalog-chat__canvas">
         <p className="catalog-chat__date">{isAvery?'Today · 10:42':'Yesterday · 16:20'}</p>
         {isAvery ? <>
