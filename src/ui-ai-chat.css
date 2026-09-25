@@ -113,3 +113,11 @@
 /* Model and effort use the same 36px native select geometry as other Kit forms. */
 .ui-kit-ai-chat__model .ui-kit-control { width:142px; max-width:142px; }
 @media (max-width:850px) { .ui-kit-ai-chat__header { flex-wrap:wrap; }.ui-kit-ai-chat__settings { width:100%; justify-content:flex-start; }.ui-kit-ai-chat__model { flex:1; min-width:118px; }.ui-kit-ai-chat__model .ui-kit-control { width:100%; max-width:none; } }
+/* A sidebar can narrow the conversation even on desktop; preserve its title and description above the controls. */
+.ui-kit-ai-chat__main { container-type:inline-size; }
+@container (max-width:600px) {
+  .ui-kit-ai-chat__header { flex-wrap:wrap; }
+  .ui-kit-ai-chat__header-title { flex-basis:100%; }
+  .ui-kit-ai-chat__header-title small { white-space:normal; }
+  .ui-kit-ai-chat__settings { width:100%; justify-content:flex-start; }
+}

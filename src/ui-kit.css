@@ -419,6 +419,10 @@ select.ui-kit-control:not([type='checkbox']):not([type='radio']):not(.sr-only) {
 }
 .ui-kit-card {
   --ui-kit-card-border-start: 1px;
+  /* Cards fill their grid cell so neighboring panels share one bottom edge. */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   min-width: 0;
   border: 1px solid var(--ui-kit-line);
   border-radius: var(--ui-kit-radius);
@@ -485,6 +489,8 @@ select.ui-kit-control:not([type='checkbox']):not([type='radio']):not(.sr-only) {
 }
 .ui-kit-card__body {
   display: grid;
+  flex: 1;
+  align-content: start;
   gap: var(--ui-kit-space-3);
   min-width: 0;
   padding: 12px;
@@ -748,11 +754,10 @@ select.ui-kit-control:not([type='checkbox']):not([type='radio']):not(.sr-only) {
   box-shadow: 0 20px 70px rgb(0 0 0 / 24%);
 }
 .ui-kit-dialog--wide { width: min(960px, 100%); }
-.ui-kit-dialog--image { width: min(1200px, 100%); background: #17252c; }
+/* Small previews fit their content; large images remain bounded by the viewport. */
+.ui-kit-dialog--image { width: max-content; min-width: min(360px, 100%); max-width: min(1200px, 100%); background: #17252c; }
 .ui-kit-dialog--image .ui-kit-dialog__body { display: grid; place-items: center; padding: 8px; }
 .ui-kit-dialog--image .ui-kit-dialog__body img { display: block; max-width: 100%; max-height: calc(100dvh - 110px); object-fit: contain; }
-.ui-kit-dialog--image > header { color: #fff; background: #253740; }
-.ui-kit-dialog--image .ui-kit-dialog__close { color: #fff; }
 .ui-kit-dialog > header,
 .ui-kit-dialog > footer {
   display: flex;
@@ -790,6 +795,10 @@ select.ui-kit-control:not([type='checkbox']):not([type='radio']):not(.sr-only) {
   justify-content: flex-end;
   border-top: 1px solid #d8e0e4;
 }
+/* Image dialogs retain a dark header after the generic header background rule. */
+.ui-kit-dialog--image > header { color: #fff; background: #253740; border-color: #405762; }
+.ui-kit-dialog--image .ui-kit-dialog__close { color: #fff; }
+.ui-kit-dialog--image .ui-kit-dialog__close:hover { border-color: #748d99; background: #405762; }
 .ui-kit-avatar {
   display: inline-grid;
   width: 30px;

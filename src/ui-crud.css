@@ -28,7 +28,9 @@
 .ui-kit-crud__form>label { display:grid; align-content:start; gap:5px; font-size:11px; font-weight:700; }
 .ui-kit-crud__form>label .ui-kit-control { width:100%; }
 .ui-kit-crud__form>label:has(textarea) { grid-column:1/-1; }
-.ui-kit-crud__form>.ui-kit-crud__checkbox { display:flex; align-items:center; gap:10px; }
+/* Checkboxes align with the control row and lead their label like the Kit's other choices. */
+.ui-kit-crud__form>.ui-kit-crud__checkbox { display:flex; flex-direction:row-reverse; justify-content:flex-end; align-items:center; align-self:end; min-height:36px; gap:10px; }
+.ui-kit-crud__checkbox input { margin:0; }
 @media(max-width:650px) { .ui-kit-crud__form { grid-template-columns:1fr; }.ui-kit-crud__toolbar>div { margin-left:0; }.ui-kit-crud__footer { justify-content:center; } }
 .ui-kit-crud__form-error { grid-column:1/-1; margin:0; padding:7px 9px; border:1px solid #e7b4af; color:#8f3027; background:#fff1ee; font-size:11px; }
 /* Column sorting remains reachable when the desktop table header becomes cards. */

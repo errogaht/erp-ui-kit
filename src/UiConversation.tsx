@@ -59,7 +59,20 @@ export function UiPopoverMenu({ label, icon, children, menuRef, disabled = false
       if (!rect) return
       const width = Math.max(190, panelRef.current?.offsetWidth ?? 190)
       const height = panelRef.current?.offsetHeight ?? 80
-      setPosition({ left: Math.max(8, Math.min(rect.right - width, window.innerWidth - width - 8)), top: rect.bottom + height + 8 <= window.innerHeight ? rect.bottom + 5 : Math.max(8, rect.top - height - 5) })
+      const fitsAbove = rect.top - height - 5 >= 8
+      const fitsBelow = rect.bottom + height + 8 <= window.innerHeight
+      const workspace = summaryRef.current?.closest('.ui-kit-composer')?.parentElement?.getBoundingClientRect()
+      // Keep composer menus within their conversation column when it can contain the menu.
+      const minLeft = workspace && workspace.width >= width + 16 ? Math.max(8, workspace.left + 8) : 8
+      const maxLeft = workspace && workspace.width >= width + 16
+        ? Math.min(window.innerWidth - width - 8, workspace.right - width - 8)
+        : window.innerWidth - width - 8
+      // Composer menus belong inside the workspace above its bottom edge; header menus can open below.
+      const above = fitsAbove && (Boolean(summaryRef.current?.closest('.ui-kit-composer')) || !fitsBelow)
+      setPosition({
+        left: Math.max(minLeft, Math.min(rect.right - width, maxLeft)),
+        top: above ? rect.top - height - 5 : Math.max(8, Math.min(rect.bottom + 5, window.innerHeight - height - 8)),
+      })
     }
     const closeOutside = (event: PointerEvent) => { if (!summaryRef.current?.contains(event.target as Node) && !panelRef.current?.contains(event.target as Node)) setOpen(false) }
     const closeOnFocusAway = (event: FocusEvent) => { if (!summaryRef.current?.contains(event.target as Node) && !panelRef.current?.contains(event.target as Node)) setOpen(false) }

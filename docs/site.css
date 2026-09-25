@@ -21,10 +21,33 @@
 .catalog-chat__inbox,
 .catalog-chat__details { padding: 12px; }
 .catalog-chat__canvas { padding: 12px; }
+/* Navigation examples show the selected content beside the sidebar instead of leaving an empty canvas. */
+.catalog-nav-preview { display: grid; grid-template-columns: 220px minmax(0, 1fr); align-items: start; gap: 12px; }
+.catalog-nav-preview > .ui-kit-sidebar-nav { width: 100%; }
+@media (max-width: 750px) { .catalog-nav-preview { grid-template-columns: 1fr; } }
+/* A narrower example sidebar preserves the CRUD table at common laptop widths. */
+.catalog-admin-layout { grid-template-columns: 190px minmax(0, 1fr); }
+@media (max-width: 750px) { .catalog-admin-layout { grid-template-columns: 1fr; } }
+/* A laptop-width demo gives the data table its full width; the navigation stays visible in its own catalog example. */
+@media (max-width: 1250px) { .catalog-admin-layout { grid-template-columns: 1fr; } .catalog-admin-layout > .ui-kit-sidebar-nav { display: none; } }
+/* Sixteen starter icons form two balanced rows instead of a short ragged second row. */
+.catalog-icons__grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+@media (max-width: 850px) { .catalog-icons__grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+@media (max-width: 580px) { .catalog-icons__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* The attached page preview shares the file link's edge and keeps the source image's ratio. */
+.catalog-chat__canvas .ui-kit-image-preview { width: 158px; }
+.catalog-chat__canvas .ui-kit-image-preview img { height: auto; }
+.catalog-chat__date { padding: 3px 8px; border: 1px solid var(--ui-kit-line); border-radius: 10px; background: var(--ui-kit-panel); }
 /* At laptop widths the linked case sits below the thread; pair its facts with the two actions. */
 @media (max-width: 1390px) and (min-width: 751px) {
   .catalog-chat__details { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .catalog-chat__details > .ui-kit-panel { grid-column: 1; grid-row: 2 / span 2; }
   .catalog-chat__details > .ui-kit-action-tile { grid-column: 2; }
   .catalog-chat__details > .ui-kit-line-item { grid-column: 1 / -1; }
+}
+/* Keep example names intact when long component lists wrap on narrower desktop pages. */
+.catalog-example>header strong { flex:none; }
+@media(max-width:1250px) and (min-width:751px) {
+  .catalog-example>header { align-items:flex-start; }
+  .catalog-icons__variants { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }

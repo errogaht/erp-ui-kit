@@ -48,7 +48,8 @@
 .ui-kit-composer { display: grid; grid-template-columns: 30px minmax(0, 1fr) 30px auto; align-items: end; gap: 5px; min-width: 0; padding: 8px 12px; border-top: 1px solid var(--ui-kit-line); background: var(--ui-kit-subtle); }
 .ui-kit-composer > .ui-kit-button { min-height: 30px; }
 .ui-kit-composer .ui-kit-popover-menu { align-self: end; }
-.ui-kit-surface .ui-kit-conversation-canvas { background: var(--ui-kit-bg); background-image: linear-gradient(#dce2e6 1px, transparent 1px), linear-gradient(90deg, #dce2e6 1px, transparent 1px); background-size: 24px 24px; }
+/* A low-contrast grid gives message canvases texture without competing with message boundaries. */
+.ui-kit-surface .ui-kit-conversation-canvas { background: var(--ui-kit-bg); background-image: linear-gradient(#e8edf0 1px, transparent 1px), linear-gradient(90deg, #e8edf0 1px, transparent 1px); background-size: 24px 24px; }
 /* Reusable channel and optional send flags live in the same floating layer as composer actions. */
 .ui-kit-reply-settings { display:grid; gap:9px; min-width:220px; padding:5px; color:var(--ui-kit-ink); font:12px Inter,system-ui,sans-serif; }
 .ui-kit-reply-settings>label { display:grid; gap:5px; }

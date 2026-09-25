@@ -18,7 +18,18 @@ export function UiBadgeSelect({ options, value, onChange, label = 'Status', disa
   const [position, setPosition] = useState({ top: 0, left: 0, width: 150 })
   useEffect(() => {
     if (!open) return
-    const place = () => { const rect = root.current?.getBoundingClientRect(); if (rect) { const height = panel.current?.offsetHeight ?? 120; setPosition({ top: rect.bottom + height + 8 <= window.innerHeight ? rect.bottom + 4 : Math.max(8, rect.top - height - 4), left: Math.max(8, Math.min(rect.left, window.innerWidth - rect.width - 8)), width: rect.width }) } }
+    const place = () => {
+      const rect = root.current?.getBoundingClientRect()
+      if (!rect) return
+      const height = panel.current?.offsetHeight ?? 120
+      // A full-width field must not turn five short status choices into a very wide empty menu.
+      const width = Math.min(rect.width, 260)
+      setPosition({
+        top: rect.bottom + height + 8 <= window.innerHeight ? rect.bottom + 4 : Math.max(8, rect.top - height - 4),
+        left: Math.max(8, Math.min(rect.left, window.innerWidth - width - 8)),
+        width,
+      })
+    }
     const close = (event: PointerEvent) => { if (!root.current?.contains(event.target as Node) && !panel.current?.contains(event.target as Node)) setOpen(false) }
     const closeOnFocusAway = (event: FocusEvent) => { if (!root.current?.contains(event.target as Node) && !panel.current?.contains(event.target as Node)) setOpen(false) }
     place()
