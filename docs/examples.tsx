@@ -24,25 +24,40 @@ export function ChatWorkspace() {
   const [imageOpen, setImageOpen] = useState(false)
   const [channel, setChannel] = useState<'telegram' | 'whatsapp'>('telegram')
   const [notify, setNotify] = useState(true)
+  // Keep the selected example's header, history, linked record and composer in one fictional case.
+  const isAvery = selected === 'avery'
+  const selectConversation = (person: 'avery' | 'jordan') => {
+    setSelected(person)
+    setChannel(person === 'avery' ? 'telegram' : 'whatsapp')
+    setDraft('')
+    setSent(false)
+  }
   return <div className="catalog-chat">
     <div className="catalog-chat__inbox">
       <div className="catalog-chat__column-title"><strong>Inbox</strong><UiBadge tone="accent">3 active</UiBadge></div>
-      <UiInboxCard title="Avery Stone" subtitle="CASE-1042 · Dispatch request" signals={[{label:'Awaiting reply',tone:'warning'}]} owner="North team" channels={['telegram']} preview="Can you confirm the delivery window?" unread={2} active={selected==='avery'} onClick={()=>setSelected('avery')} footer="Today · 10:42" />
-      <UiInboxCard title="Jordan Lee" subtitle="CASE-1043 · Stock update" signals={[{label:'Resolved',tone:'success'}]} owner="West team" channels={['whatsapp']} preview="Thanks, that works for us." active={selected==='jordan'} onClick={()=>setSelected('jordan')} footer="Yesterday · 16:20" />
+      <UiInboxCard title="Avery Stone" subtitle="CASE-1042 · Dispatch request" signals={[{label:'Awaiting reply',tone:'warning'}]} owner="North team" channels={['telegram']} preview="Can you confirm the delivery window?" unread={2} active={isAvery} onClick={()=>selectConversation('avery')} footer="Today · 10:42" />
+      <UiInboxCard title="Jordan Lee" subtitle="CASE-1043 · Stock update" signals={[{label:'Resolved',tone:'success'}]} owner="West team" channels={['whatsapp']} preview="Thanks, that works for us." active={!isAvery} onClick={()=>selectConversation('jordan')} footer="Yesterday · 16:20" />
       <UiDisclosure label="Inbox filters" count={2}><UiInline><UiBadge tone="warning">Needs reply</UiBadge><UiBadge tone="success">Resolved</UiBadge></UiInline></UiDisclosure>
     </div>
     <div className="catalog-chat__thread">
-      <UiSplit className="catalog-chat__thread-header"><UiInline><UiAvatar initials={selected==='avery'?'AS':'JL'} tone="accent"/><div><strong>{selected==='avery'?'Avery Stone':'Jordan Lee'}</strong><UiStatusLine><UiBadge tone="telegram">Telegram</UiBadge><span>CASE-1042 · North team</span></UiStatusLine></div></UiInline><UiPopoverMenu label="Conversation actions" icon={<UiBootstrapIcon name="sliders"/>}><UiButton type="button" variant="quiet">Mark for review</UiButton></UiPopoverMenu></UiSplit>
+      <UiSplit className="catalog-chat__thread-header"><UiInline><UiAvatar initials={isAvery?'AS':'JL'} tone="accent"/><div><strong>{isAvery?'Avery Stone':'Jordan Lee'}</strong><UiStatusLine><UiBadge tone={isAvery?'telegram':'whatsapp'}>{isAvery?'Telegram':'WhatsApp'}</UiBadge><span>{isAvery?'CASE-1042 · North team':'CASE-1043 · West team'}</span></UiStatusLine></div></UiInline><UiPopoverMenu label="Conversation actions" icon={<UiBootstrapIcon name="sliders"/>}><UiButton type="button" variant="quiet">Mark for review</UiButton></UiPopoverMenu></UiSplit>
       <UiConversationCanvas className="catalog-chat__canvas">
-        <p className="catalog-chat__date">Today · 10:42</p>
-        <UiMessage><UiQuote label="Previous update">Your request is ready.</UiQuote><p>Can you confirm the delivery window?</p><UiStatusLine><span>10:42</span><UiBadge tone="warning">Needs reply</UiBadge></UiStatusLine></UiMessage>
-        <UiMessage outgoing><p>We are checking the schedule and will update you shortly.</p><UiStatusLine><span>10:44 · Sent</span></UiStatusLine></UiMessage>
-        <UiMessage><p>Here is the reference document.</p><UiAttachmentLink href="#conversation" label="reference.pdf" detail="PDF · sample attachment"/><UiImagePreview src={illustration} alt="Open sample document preview" onClick={()=>setImageOpen(true)}/><UiStatusLine><span>10:46</span></UiStatusLine></UiMessage>
+        <p className="catalog-chat__date">{isAvery?'Today · 10:42':'Yesterday · 16:20'}</p>
+        {isAvery ? <>
+          <UiMessage><UiQuote label="Previous update">Your request is ready.</UiQuote><p>Can you confirm the delivery window?</p><UiStatusLine><span>10:42</span><UiBadge tone="warning">Needs reply</UiBadge></UiStatusLine></UiMessage>
+          <UiMessage outgoing><p>We are checking the schedule and will update you shortly.</p><UiStatusLine><span>10:44 · Sent</span></UiStatusLine></UiMessage>
+          <UiMessage><p>Here is the reference document.</p><UiAttachmentLink href="#conversation" label="reference.pdf" detail="PDF · sample attachment"/><UiImagePreview src={illustration} alt="Open sample document preview" onClick={()=>setImageOpen(true)}/><UiStatusLine><span>10:46</span></UiStatusLine></UiMessage>
+        </> : <>
+          <UiMessage><p>Can you confirm whether four units are available?</p><UiStatusLine><span>16:12</span></UiStatusLine></UiMessage>
+          <UiMessage outgoing><p>We are checking the latest stock update.</p><UiStatusLine><span>16:15 · Sent</span></UiStatusLine></UiMessage>
+          <UiMessage outgoing><p>The updated stock is available for the West team.</p><UiStatusLine><span>16:18 · Sent</span></UiStatusLine></UiMessage>
+          <UiMessage><p>Thanks, that works for us.</p><UiStatusLine><span>16:20</span><UiBadge tone="success">Resolved</UiBadge></UiStatusLine></UiMessage>
+        </>}
         {sent && <UiMessage outgoing><p>{draft || 'We will follow up shortly.'}</p><UiStatusLine><span>Just now · Example only</span></UiStatusLine></UiMessage>}
       </UiConversationCanvas>
       <UiComposer onSubmit={event=>{event.preventDefault();setSent(true)}}><UiIconButton label="Attach file" type="button"><UiBootstrapIcon name="paperclip"/></UiIconButton><UiPopoverMenu label="Reply options" icon={<UiBootstrapIcon name="chat-left-text"/>}><button className="catalog-chat__menu-option" onClick={()=>setDraft('Hello! We will check and get back to you shortly.')} type="button"><UiBootstrapIcon name="chat-square-text"/> Insert template</button><button className="catalog-chat__menu-option" onClick={()=>setDraft('Internal note: follow up with the operations team.')} type="button"><UiBootstrapIcon name="sticky"/> Internal note</button></UiPopoverMenu><UiInput aria-label="Message" placeholder={`Write via ${channel === 'telegram' ? 'Telegram' : 'WhatsApp'}…`} value={draft} onChange={event=>{setDraft(event.target.value);setSent(false)}}/><UiPopoverMenu label="Reply settings" icon={<UiBootstrapIcon name="gear"/>}><UiReplySettings channels={[{value:'telegram',label:'Telegram'},{value:'whatsapp',label:'WhatsApp'}]} channel={channel} onChannelChange={value=>setChannel(value as 'telegram' | 'whatsapp')} options={[{id:'notify',label:'Notify the assigned team',checked:notify}]} onOptionChange={(_,checked)=>setNotify(checked)}/></UiPopoverMenu><UiButton type="submit" variant="primary"><UiBootstrapIcon name="send"/> Send</UiButton></UiComposer>
     </div>
-    <div className="catalog-chat__details"><div className="catalog-chat__column-title"><strong>Linked record</strong><UiBadge tone="warning">Open</UiBadge></div><UiPanel title="CASE-1042"><UiFacts items={[{label:'Owner',value:'North team'},{label:'Status',value:'Awaiting confirmation'},{label:'Priority',value:'Normal'}]}/></UiPanel><UiActionTile title="Open record" detail="View linked operational data" type="button"/><UiActionTile title="Add internal note" detail="Keep context with this conversation" type="button"/><UiLineItem title="Sample item" detail="SKU DEMO-1" quantity="2 units" amount="$48.00"/></div>
+    <div className="catalog-chat__details"><div className="catalog-chat__column-title"><strong>Linked record</strong><UiBadge tone={isAvery?'warning':'success'}>{isAvery?'Open':'Resolved'}</UiBadge></div><UiPanel title={isAvery?'CASE-1042':'CASE-1043'}><UiFacts items={[{label:'Owner',value:isAvery?'North team':'West team'},{label:'Status',value:isAvery?'Awaiting confirmation':'Resolved'},{label:'Priority',value:'Normal'}]}/></UiPanel><UiActionTile title="Open record" detail="View linked operational data" type="button"/><UiActionTile title="Add internal note" detail="Keep context with this conversation" type="button"/><UiLineItem title={isAvery?'Sample item':'Stock item'} detail={isAvery?'SKU DEMO-1':'SKU DEMO-2'} quantity={isAvery?'2 units':'4 units'} amount={isAvery?'$48.00':'$64.00'}/></div>
     <UiDialog open={imageOpen} title="Sample document preview" size="image" onClose={()=>setImageOpen(false)}><img alt="Generic document illustration" src={illustration}/></UiDialog>
   </div>
 }

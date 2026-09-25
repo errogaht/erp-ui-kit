@@ -389,6 +389,13 @@ select.ui-kit-control:not([type='checkbox']):not([type='radio']):not(.sr-only) {
   max-width: 100%;
   white-space: normal;
 }
+/* Routing facts share a line on desktop and wrap as a unit in narrow inboxes. */
+.ui-kit-inbox-card__routing {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
 .ui-kit-inbox-card__classification {
   color: var(--ui-kit-muted);
 }
@@ -541,7 +548,8 @@ select.ui-kit-control:not([type='checkbox']):not([type='radio']):not(.sr-only) {
 }
 .ui-kit-facts > div {
   display: grid;
-  grid-template-columns: minmax(110px, 0.7fr) minmax(0, 1fr);
+  /* Values need room in narrow side panels; labels can fit within a shorter column. */
+  grid-template-columns: minmax(60px, 0.5fr) minmax(0, 1fr);
   gap: 8px;
   padding: 7px 0;
   border-bottom: 1px solid #d8e0e4;

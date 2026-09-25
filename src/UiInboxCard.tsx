@@ -64,21 +64,24 @@ export function UiInboxCard({
         {classification ? (
           <span className="ui-kit-inbox-card__classification" title={classificationTitle}>{classification}</span>
         ) : null}
-        {owner !== undefined ? <span>{ownerLabel}: {owner}</span> : null}
+        {/* Ownership and channels describe one routing fact, so keep them together when space allows. */}
+        <span className="ui-kit-inbox-card__routing">
+          {owner !== undefined ? <span>{ownerLabel}: {owner}</span> : null}
+          <span className="ui-kit-inbox-card__signals">
+            {channels.length
+              ? channels.map((channel) => (
+                  <UiBadge key={channel} tone={channel}>
+                    {channel === 'telegram' ? 'TG' : 'WA'}
+                  </UiBadge>
+                ))
+              : 'No channel'}
+          </span>
+        </span>
         {alerts.map((alert) => (
           <strong className="ui-kit-inbox-card__alert" key={alert}>
             {alert}
           </strong>
         ))}
-        <span className="ui-kit-inbox-card__signals">
-          {channels.length
-            ? channels.map((channel) => (
-                <UiBadge key={channel} tone={channel}>
-                  {channel === 'telegram' ? 'TG' : 'WA'}
-                </UiBadge>
-              ))
-            : 'No channel'}
-        </span>
         {preview ? <span className="ui-kit-inbox-card__preview">{preview}</span> : null}
         {footer ? <span className="ui-kit-inbox-card__footer">{footer}</span> : null}
       </span>
