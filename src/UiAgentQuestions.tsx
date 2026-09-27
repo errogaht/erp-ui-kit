@@ -74,6 +74,7 @@ function QuestionRequest({ questions, title = 'A few questions before I continue
           const prefix = `${id}-${index}`
           return <fieldset key={question.id} disabled={frozen} aria-describedby={question.description ? `${prefix}-description` : undefined}>
             <legend><span>{index + 1}</span>{question.title}</legend>
+            <div className="ui-kit-agent-questions__answers">
             {question.description && <p id={`${prefix}-description`}>{question.description}</p>}
             <div className="ui-kit-agent-questions__options">
               {question.options.map(option => <label key={option.id} className="ui-kit-agent-questions__option">
@@ -88,6 +89,7 @@ function QuestionRequest({ questions, title = 'A few questions before I continue
             </label>
             <UiTextarea aria-label={`Your answer: ${question.title}`} rows={2} value={draft?.text ?? ''}
               placeholder="Write your answer…" onChange={event => update(question.id, { text: event.target.value, custom: true })} />
+            </div>
           </fieldset>
         })}
       </div>

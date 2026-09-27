@@ -4,12 +4,15 @@
 .ui-kit-agent-questions * { box-sizing:border-box; }
 .ui-kit-agent-questions > header { display:flex; align-items:start; justify-content:space-between; flex-wrap:wrap; gap:10px; padding:16px; border-bottom:1px solid var(--ui-kit-line); background:var(--ui-kit-subtle); }
 .ui-kit-agent-questions > header p { margin:4px 0 0; color:var(--ui-kit-muted); font-size:12px; }
-.ui-kit-agent-questions__list { display:grid; gap:22px; padding:16px; }
-.ui-kit-agent-questions fieldset { min-width:0; margin:0; padding:0; border:0; }
-.ui-kit-agent-questions legend { display:flex; align-items:baseline; gap:8px; padding:0; font-weight:650; }
-.ui-kit-agent-questions legend > span { color:var(--ui-kit-muted); font-variant-numeric:tabular-nums; }
-.ui-kit-agent-questions fieldset > p { margin:6px 0; color:var(--ui-kit-muted); font-size:12px; }
-.ui-kit-agent-questions__options { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr)); gap:8px; margin:10px 0; }
+.ui-kit-agent-questions__list { display:grid; gap:16px; padding:16px; background:var(--ui-kit-subtle); }
+/* Each fieldset is a bounded question card. The full-width legend is its header;
+ * the cleared answer body keeps every choice and custom input inside that card. */
+.ui-kit-agent-questions fieldset { min-width:0; margin:0; padding:0; border:1px solid var(--ui-kit-line); border-radius:var(--ui-kit-radius); background:var(--ui-kit-panel); overflow:hidden; }
+.ui-kit-agent-questions legend { float:left; display:flex; align-items:baseline; gap:10px; width:100%; padding:14px 16px; border-bottom:1px solid var(--ui-kit-line); font-size:16px; line-height:1.4; font-weight:700; }
+.ui-kit-agent-questions legend > span { display:inline-grid; place-items:center; flex:0 0 24px; height:24px; border-radius:4px; color:var(--ui-kit-accent); background:var(--ui-kit-accent-soft); font-size:12px; font-variant-numeric:tabular-nums; }
+.ui-kit-agent-questions__answers { clear:both; padding:14px 16px 16px; }
+.ui-kit-agent-questions__answers > p { margin:6px 0; color:var(--ui-kit-muted); font-size:12px; }
+.ui-kit-agent-questions__options { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr)); gap:8px; margin:0 0 12px; }
 .ui-kit-agent-questions__option { display:flex; align-items:start; gap:9px; padding:10px; border:1px solid var(--ui-kit-line); border-radius:var(--ui-kit-radius); cursor:pointer; }
 .ui-kit-agent-questions__option:has(input:checked) { border-color:var(--ui-kit-accent); background:var(--ui-kit-accent-soft); }
 .ui-kit-agent-questions__option strong { font-weight:550; }
@@ -23,3 +26,5 @@
 .ui-kit-agent-questions__error { margin:0; padding:0 16px 12px; color:var(--ui-kit-danger); }
 .ui-kit-agent-questions fieldset:disabled label { cursor:default; }
 @container (max-width:420px) { .ui-kit-agent-questions > footer .ui-kit-button { width:100%; } }
+
+@container (max-width:420px) { .ui-kit-agent-questions__list { padding:10px; gap:14px; } .ui-kit-agent-questions legend { padding:12px; } .ui-kit-agent-questions__answers { padding:12px; } }
