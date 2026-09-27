@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.1 — 2026-09-27
+
+### Improved
+
+- Agent questions use separate bordered cards, larger numbered headings and divided answer bodies. Presets and custom input are visibly grouped on desktop and mobile.
+
 ## 0.9.0 — 2026-09-27
 
 - Add `UiToaster` and `uiToast`, styled Sonner notifications with six positions, actions and async states.
