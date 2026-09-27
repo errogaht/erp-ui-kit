@@ -9,7 +9,7 @@ A compact React component library for operational and ERP interfaces. The librar
 Install a pinned GitHub release:
 
 ```sh
-npm install github:errogaht/erp-ui-kit#v0.6.5
+npm install github:errogaht/erp-ui-kit#v0.7.0
 ```
 
 Import the package and its CSS once in the host app:
@@ -32,6 +32,10 @@ React and React DOM 19 are peer dependencies. The searchable combobox uses `reac
 `UiBadgeSelect` adds a colored status selector. `UiPhotoUpload` and `UiAvatarUpload` cover photo previews and circular cropping. [Admin patterns](https://errogaht.github.io/erp-ui-kit/#admin-patterns) provide a ready CRUD screen; see the [integration guide](docs/admin-patterns.md).
 
 Native inputs and selects and both searchable comboboxes have the same regular and compact heights. `UiField` accepts a clickable `UiInfoTip` in its `help` prop. `UiCallout`, `UiEmptyState`, and `UiSectionHeading` provide reusable information layouts; see the [Information examples](https://errogaht.github.io/erp-ui-kit/#information).
+
+## Workspace extensions
+
+The kit now includes 88 components. Retained document tabs, resizable panels, tree navigation, execution cards, approval controls, Markdown, code diffs, global search, notifications, schedules and generic boards support complete operational workspaces. [Explore the examples](https://errogaht.github.io/erp-ui-kit/#workspace) and read the [integration guide](docs/workspace.md). Existing simple tabs and consumer APIs remain available.
 
 ## Bootstrap Icons
 

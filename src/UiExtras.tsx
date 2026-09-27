@@ -1,3 +1,4 @@
+import { useUiDocumentActive } from './document-activity'
 import { useEffect, useId, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { ChangeEvent, DragEvent, KeyboardEvent, PointerEvent as ReactPointerEvent, SyntheticEvent } from 'react'
@@ -11,7 +12,10 @@ export type UiBadgeOption = { value: string; label: string; tone?: 'neutral' | '
 /** A controlled status list keeps badge colors visible in both the value and the menu. */
 export function UiBadgeSelect({ options, value, onChange, label = 'Status', disabled = false, className = '' }: { options: readonly UiBadgeOption[]; value: string; onChange: (value: string) => void; label?: string; disabled?: boolean; className?: string }) {
   const current = options.find(option => option.value === value)
-  const [open, setOpen] = useState(false)
+  // Portals and document-level handlers must follow retained tab activity.
+  const active = useUiDocumentActive()
+  const [requestedOpen, setOpen] = useState(false)
+  const open = requestedOpen && active
   const root = useRef<HTMLDivElement>(null)
   const panel = useRef<HTMLDivElement>(null)
   const listId = useId()

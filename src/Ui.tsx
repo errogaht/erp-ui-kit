@@ -1,3 +1,4 @@
+import { useUiDocumentActive } from './document-activity'
 import { useEffect, useId, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, HTMLAttributes, InputHTMLAttributes, ReactNode } from 'react'
@@ -530,15 +531,19 @@ export function UiDialog({
   size?: 'regular' | 'wide' | 'image'
   className?: string
 }) {
+  const active = useUiDocumentActive()
+  const visible = open && active
   const titleId = useId()
   const dialogRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    if (!open) return
+    if (!visible) return
     const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null
     dialogRef.current?.focus()
-    return () => previous?.focus()
-  }, [open])
-  if (!open) return null
+    // A retained tab may disappear while its modal is open. Never restore focus
+    // into an inactive document; its host owns the next active tab's focus.
+    return () => { if (previous?.isConnected && !previous.closest('[hidden], [inert]')) previous.focus() }
+  }, [visible])
+  if (!visible) return null
   return createPortal(
     <div
       className="ui-kit-surface ui-kit-dialog-backdrop"

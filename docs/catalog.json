@@ -89,5 +89,30 @@
   ],
   "Admin patterns": [
     "UiCrudScreen"
+  ],
+  "Workspace": [
+    "UiWorkspace",
+    "UiWorkspaceTabs",
+    "UiResizableSplit",
+    "UiTree",
+    "UiBreadcrumbs"
+  ],
+  "Agent activity": [
+    "UiExecutionLog",
+    "UiPromptActions",
+    "UiApprovalCard",
+    "UiVoiceControl"
+  ],
+  "Documents and changes": [
+    "UiMarkdown",
+    "UiMarkdownEditor",
+    "UiCodeDiff"
+  ],
+  "Operations": [
+    "UiCommandPalette",
+    "UiFilterBar",
+    "UiNotificationList",
+    "UiScheduleEditor",
+    "UiBoard"
   ]
 }

@@ -1,3 +1,4 @@
+import { useUiDocumentActive } from './document-activity'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ComponentPropsWithRef, DetailedHTMLProps, DetailsHTMLAttributes, HTMLAttributes, MouseEvent, ReactNode, Ref } from 'react'
@@ -49,7 +50,10 @@ export function UiLineItem({ title, detail, quantity, amount, className = '' }: 
 export function UiPopoverMenu({ label, icon, children, menuRef, disabled = false, onSummaryClick, className = '', ...props }: DetailedHTMLProps<DetailsHTMLAttributes<HTMLDetailsElement>, HTMLDetailsElement> & { label: string; icon: ReactNode; children: ReactNode; menuRef?: Ref<HTMLDetailsElement>; disabled?: boolean; onSummaryClick?: (event: MouseEvent<HTMLElement>) => void }) {
   const summaryRef = useRef<HTMLElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
-  const [open, setOpen] = useState(false)
+  // Portals and document-level handlers must follow retained tab activity.
+  const active = useUiDocumentActive()
+  const [requestedOpen, setOpen] = useState(false)
+  const open = requestedOpen && active
   const [position, setPosition] = useState({ top: 0, left: 0 })
   // A body portal escapes clipped chat columns; viewport coordinates keep it attached while scrolling.
   useEffect(() => {

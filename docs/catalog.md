@@ -4,6 +4,10 @@ Import components from `@errogaht/erp-ui-kit`. Import `@errogaht/erp-ui-kit/styl
 
 | Area | Exports | Use |
 | --- | --- | --- |
+| Workspace | `UiWorkspace`, `UiWorkspaceTabs`, `UiResizableSplit`, `UiTree`, `UiBreadcrumbs` | Retained documents, resizable panes and keyboard navigation. |
+| Agent activity | `UiExecutionLog`, `UiPromptActions`, `UiApprovalCard`, `UiVoiceControl` | Inspectable execution, presets, decisions and recording states. |
+| Documents | `UiMarkdown`, `UiMarkdownEditor`, `UiCodeDiff` | Plain Markdown and structured split/unified code changes. |
+| Operations | `UiCommandPalette`, `UiFilterBar`, `UiNotificationList`, `UiScheduleEditor`, `UiBoard` | Search, saved views, notifications, recurrence input and generic pipelines. |
 | Layout | `UiContainer`, `UiGrid`, `UiCell`, `UiStack`, `UiInline`, `UiSplit` | Responsive page and card composition. |
 | Actions | `UiButton`, `UiLinkButton`, `UiIconButton`, `UiActionTile`, `UiFormActionRow` | Native actions and aligned field actions. |
 | Forms | `UiField`, `UiInput`, `UiSelect`, `UiTextarea`, `UiChoice`, `UiCombobox`, `UiAsyncCombobox`, `UiBadgeSelect` | Labels, validation, native controls and searchable selectors. |
@@ -36,3 +40,5 @@ The library is intentionally scoped to presentation. It does not own fetches, pe
 The [admin CRUD template](admin-patterns.md) composes fields, navigation and a compact table for entity management.
 
 The task tracker has a [live list and detail demo](https://errogaht.github.io/erp-ui-kit/#tasks) and a [data and integration guide](tasks.md). The host supplies task records and persists patches/comments. `UiRichTextEditor` returns Tiptap JSON; both read-only comments and editing use the same document renderer.
+
+See the [workspace integration guide](workspace.md) for retained-document activity, AI-chat extension slots, asynchronous send recovery and host boundaries. The exported `useUiDocumentActive()` hook is nonvisual and is not included in the component count.

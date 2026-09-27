@@ -121,3 +121,10 @@
   .ui-kit-ai-chat__header-title small { white-space:normal; }
   .ui-kit-ai-chat__settings { width:100%; justify-content:flex-start; }
 }
+/* Embedded sessions reuse the same transcript/composer with host-owned context,
+   prompts and approval slots. The default standalone history stays unchanged. */
+.ui-kit-ai-chat.ui-kit-ai-chat--embedded { grid-template-columns: minmax(0, 1fr); }
+.ui-kit-ai-chat__extension { padding: 0 16px; border-bottom: 1px solid var(--ui-kit-line); }
+.ui-kit-ai-chat__before-composer { padding-bottom: 12px; }
+.ui-kit-ai-chat__message-main > .ui-kit-execution { margin: 12px 0; }
+.ui-kit-ai-chat__composer-actions > div { flex-wrap: wrap; }

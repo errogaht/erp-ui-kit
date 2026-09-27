@@ -57,3 +57,13 @@
   .catalog-example>header { align-items:flex-start; }
   .catalog-icons__variants { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
+/* Example-only spacing and synthetic dashboard data; shared behavior lives in src. */
+.workspace-demo { min-width: 0; } .workspace-demo > p { color: var(--ui-kit-muted); margin: 0 0 18px; }
+.workspace-demo__grow { flex: 1; } .workspace-demo__explorer { padding: 16px 8px; min-width: 140px; } .workspace-demo__explorer > strong { display: block; padding: 0 8px 14px; color: var(--ui-kit-muted); font-size: 10px; letter-spacing: .12em; }
+.workspace-demo__document-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; } .workspace-demo__document-heading h3 { flex: 1; margin: 5px 0; font-size: 20px; }
+.workspace-demo__metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 8px 0; } .workspace-demo__metrics > div { display: grid; gap: 10px; border: 1px solid var(--ui-kit-line); background: var(--ui-kit-subtle); padding: 16px; } .workspace-demo__metrics span { color: var(--ui-kit-muted); font-size: 11px; } .workspace-demo__metrics strong { font-size: 27px; font-weight: 600; }
+.workspace-demo__hint { font-size: 12px; color: var(--ui-kit-muted); } .workspace-demo__two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.workspace-demo__reading { padding: 20px; border: 1px solid var(--ui-kit-line); background: var(--ui-kit-panel); min-width: 0; } .workspace-demo__eyebrow { display: block; font-size: 10px; letter-spacing: .1em; color: var(--ui-kit-muted); margin-bottom: 16px; }
+.workspace-demo__toggle { display: flex; align-items: center; gap: 8px; font-size: 12px; } .workspace-demo__toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+@media (max-width: 1050px) { .workspace-demo__two { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 600px) { .workspace-demo__metrics { grid-template-columns: 1fr; } .workspace-demo__metrics > div { display: flex; align-items: center; justify-content: space-between; padding: 10px; } }

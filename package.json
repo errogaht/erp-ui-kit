@@ -1,6 +1,6 @@
 {
   "name": "@errogaht/erp-ui-kit",
-  "version": "0.6.5",
+  "version": "0.7.0",
   "description": "Reusable React components for compact ERP interfaces",
   "type": "module",
   "repository": {
@@ -48,16 +48,22 @@
     "build:docs": "vite build --config vite.docs.config.ts",
     "check:catalog": "node scripts/check-catalog.mjs",
     "icons:search": "node scripts/search-icons.mjs",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "prepare": "npm run build"
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json --noEmit",
+    "prepare": "npm run build",
+    "test": "vitest run"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.4",
+    "jsdom": "^30.1.1",
     "react": "~19.2.8",
     "react-dom": "~19.2.8",
     "typescript": "~6.0.2",
-    "vite": "^8.2.0"
+    "vite": "^8.2.0",
+    "vitest": "^5.0.2"
   }
 }

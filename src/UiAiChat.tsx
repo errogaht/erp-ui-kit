@@ -5,6 +5,8 @@ import remarkGfm from 'remark-gfm'
 import { UiBootstrapIcon } from './UiBootstrapIcon'
 import { UiButton } from './Ui'
 import { UiSelect } from './UiControls'
+import { UiExecutionLog } from './UiAgentActivity'
+import type { UiExecutionEntry } from './UiAgentActivity'
 import './ui-ai-chat.css'
 
 export type UiAiChatConversation = { id: string; title: string; updatedAt?: string; pinned?: boolean }
@@ -19,6 +21,7 @@ export type UiAiChatMessage = {
   status?: 'complete' | 'streaming' | 'error'
   attachments?: readonly UiAiChatAttachment[]
   sources?: readonly UiAiChatSource[]
+  activity?: readonly UiExecutionEntry[]
   feedback?: 'positive' | 'negative'
 }
 export type UiAiChatModel = { id: string; label: string }
@@ -40,9 +43,16 @@ export type UiAiChatProps = {
   maxFiles?: number
   accept?: string
   className?: string
+  /** Embedded sessions can hide history while retaining the existing standalone default. */
+  showHistory?: boolean
+  headerContent?: ReactNode
+  beforeComposer?: ReactNode
+  composerActions?: ReactNode
+  draftValue?: string
+  onDraftChange?: (text: string) => void
   onNewConversation: () => void
   onSelectConversation: (id: string) => void
-  onSend: (text: string, files: readonly File[]) => void
+  onSend: (text: string, files: readonly File[]) => void | Promise<void>
   onStop?: () => void
   onRegenerate?: (messageId: string) => void
   onEditMessage?: (messageId: string, text: string) => void
@@ -62,11 +72,20 @@ export function UiAiChat({
   title = 'AI assistant', description = 'Ask a question or start a new conversation.',
   conversations, activeConversationId, messages, models = [], selectedModelId, efforts = [], selectedEffortId,
   suggestions = [], isGenerating = false, error, disabled = false,
-  maxFiles = 10, accept, className = '', onNewConversation, onSelectConversation,
+  maxFiles = 10, accept, className = '', showHistory = true, headerContent, beforeComposer, composerActions, draftValue, onDraftChange, onNewConversation, onSelectConversation,
   onSend, onStop, onRegenerate, onEditMessage, onFeedback,
   onRenameConversation, onDeleteConversation, onModelChange, onEffortChange,
 }: UiAiChatProps) {
-  const [draft, setDraft] = useState('')
+  const [localDraft, setLocalDraft] = useState('')
+  const draft = draftValue ?? localDraft
+  const setDraft = (text: string) => { if (draftValue === undefined) setLocalDraft(text); onDraftChange?.(text) }
+  const [sending, setSending] = useState(false)
+  const [sendError, setSendError] = useState('')
+  const sendLock = useRef(false)
+  const currentInput = useRef({ draft, conversationId: activeConversationId, epoch: 0 })
+  // Returning to the same session is still a new draft lifetime. Late requests
+  // from a previous visit must not clear even an identically worded draft.
+  currentInput.current = { draft, conversationId: activeConversationId, epoch: currentInput.current.epoch + (currentInput.current.conversationId === activeConversationId ? 0 : 1) }
   const [files, setFiles] = useState<File[]>([])
   const [query, setQuery] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -94,7 +113,8 @@ export function UiAiChat({
     if (nearBottom.current && transcript.current) transcript.current.scrollTop = transcript.current.scrollHeight
   }, [messages, latestMessage?.content])
   useEffect(() => {
-    setDraft('')
+    setLocalDraft('')
+    setSendError('')
     setFiles([])
     setEditingId(null)
     nearBottom.current = true
@@ -133,15 +153,24 @@ export function UiAiChat({
     const next = Array.from(incoming)
     setFiles(previous => [...previous, ...next].slice(0, maxFiles))
   }
-  const submit = (event?: FormEvent) => {
+  const submit = async (event?: FormEvent) => {
     event?.preventDefault()
     const text = draft.trim()
-    if (disabled || isGenerating || (!text && files.length === 0)) return
-    onSend(text, files)
-    setDraft('')
-    setFiles([])
-    if (fileInput.current) fileInput.current.value = ''
-    nearBottom.current = true
+    if (sendLock.current || disabled || isGenerating || (!text && files.length === 0)) return
+    const submittedDraft = draft, submittedFiles = files, submittedConversation = activeConversationId, submittedEpoch = currentInput.current.epoch
+    sendLock.current = true; setSending(true); setSendError('')
+    // Clear only the acknowledged draft in the original conversation. A failed
+    // upload/send must retain text and files, and late completion cannot erase
+    // a different conversation's draft or text typed during the request.
+    try {
+      await onSend(text, submittedFiles)
+      if (currentInput.current.conversationId === submittedConversation && currentInput.current.epoch === submittedEpoch) {
+        if (currentInput.current.draft === submittedDraft) setDraft('')
+        setFiles(current => current.filter(file => !submittedFiles.includes(file)))
+      }
+    } catch (failure) {
+      if (currentInput.current.conversationId === submittedConversation && currentInput.current.epoch === submittedEpoch) setSendError(failure instanceof Error ? failure.message : 'Message could not be sent. Try again.')
+    } finally { sendLock.current = false; setSending(false) }
   }
   const copy = async (key: string, content: string) => {
     try {
@@ -160,9 +189,9 @@ export function UiAiChat({
     closeHistory()
   }
 
-  return <section aria-label={title} className={`ui-kit-ai-chat ${sidebarOpen ? 'ui-kit-ai-chat--sidebar-open' : ''} ${className}`.trim()}>
-    {sidebarOpen && <button aria-label="Close conversation history" className="ui-kit-ai-chat__scrim" onClick={closeHistory} type="button" />}
-    <aside aria-label="Conversation history" className="ui-kit-ai-chat__sidebar" inert={narrowLayout && !sidebarOpen} onKeyDown={historyKeyDown}>
+  return <section aria-label={title} className={`ui-kit-ai-chat ${sidebarOpen ? 'ui-kit-ai-chat--sidebar-open' : ''} ${!showHistory ? 'ui-kit-ai-chat--embedded' : ''} ${className}`.trim()}>
+    {showHistory && sidebarOpen && <button aria-label="Close conversation history" className="ui-kit-ai-chat__scrim" onClick={closeHistory} type="button" />}
+    {showHistory && <aside aria-label="Conversation history" className="ui-kit-ai-chat__sidebar" inert={narrowLayout && !sidebarOpen} onKeyDown={historyKeyDown}>
       <div className="ui-kit-ai-chat__sidebar-top"><strong><UiBootstrapIcon name="stars" /> {title}</strong><button aria-label="Close history" className="ui-kit-ai-chat__mobile-close" onClick={closeHistory} ref={historyCloser} type="button"><UiBootstrapIcon name="x-lg" /></button></div>
       <UiButton className="ui-kit-ai-chat__new" onClick={() => { onNewConversation(); closeHistory() }} type="button" variant="primary"><UiBootstrapIcon name="plus-lg" /> New chat</UiButton>
       <label className="ui-kit-ai-chat__search"><UiBootstrapIcon name="search" /><span className="ui-kit-ai-chat__sr-only">Search conversations</span><input aria-label="Search conversations" onChange={event => setQuery(event.target.value)} placeholder="Search conversations" type="search" value={query} /></label>
@@ -174,9 +203,10 @@ export function UiAiChat({
           </>}
         </div>) : <p className="ui-kit-ai-chat__history-empty">No conversations found.</p>}
       </div>
-    </aside>
+    </aside>}
     <div className="ui-kit-ai-chat__main" onDragEnter={event => { if (event.dataTransfer.types.includes('Files')) { event.preventDefault(); dropDepth.current += 1; setDragging(true) } }} onDragLeave={event => { if (dragging) { event.preventDefault(); dropDepth.current -= 1; if (dropDepth.current <= 0) { dropDepth.current = 0; setDragging(false) } } }} onDragOver={event => { if (event.dataTransfer.types.includes('Files')) event.preventDefault() }} onDrop={event => { event.preventDefault(); dropDepth.current = 0; setDragging(false); if (!disabled) appendFiles(event.dataTransfer.files) }}>
-      <header className="ui-kit-ai-chat__header"><button aria-label="Open conversation history" className="ui-kit-ai-chat__mobile-menu" onClick={() => setSidebarOpen(true)} ref={historyOpener} type="button"><UiBootstrapIcon name="list" /></button><div className="ui-kit-ai-chat__header-title"><strong>{conversations.find(item => item.id === activeConversationId)?.title ?? title}</strong><small>{isGenerating ? 'Generating response…' : description}</small></div><div className="ui-kit-ai-chat__settings">{models.length > 0 && <label className="ui-kit-ai-chat__model"><span>Model</span><UiSelect aria-label="Model" disabled={disabled || isGenerating || !onModelChange} onChange={event => onModelChange?.(event.target.value)} value={selectedModelId ?? models[0].id}>{models.map(model => <option key={model.id} value={model.id}>{model.label}</option>)}</UiSelect></label>}{efforts.length > 0 && <label className="ui-kit-ai-chat__model"><span>Effort</span><UiSelect aria-label="Effort" disabled={disabled || isGenerating || !onEffortChange} onChange={event => onEffortChange?.(event.target.value)} value={selectedEffortId ?? efforts[0].id}>{efforts.map(effort => <option key={effort.id} value={effort.id}>{effort.label}</option>)}</UiSelect></label>}</div></header>
+      <header className="ui-kit-ai-chat__header">{showHistory && <button aria-label="Open conversation history" className="ui-kit-ai-chat__mobile-menu" onClick={() => setSidebarOpen(true)} ref={historyOpener} type="button"><UiBootstrapIcon name="list" /></button>}<div className="ui-kit-ai-chat__header-title"><strong>{conversations.find(item => item.id === activeConversationId)?.title ?? title}</strong><small>{isGenerating ? 'Generating response…' : description}</small></div><div className="ui-kit-ai-chat__settings">{models.length > 0 && <label className="ui-kit-ai-chat__model"><span>Model</span><UiSelect aria-label="Model" disabled={disabled || isGenerating || !onModelChange} onChange={event => onModelChange?.(event.target.value)} value={selectedModelId ?? models[0].id}>{models.map(model => <option key={model.id} value={model.id}>{model.label}</option>)}</UiSelect></label>}{efforts.length > 0 && <label className="ui-kit-ai-chat__model"><span>Effort</span><UiSelect aria-label="Effort" disabled={disabled || isGenerating || !onEffortChange} onChange={event => onEffortChange?.(event.target.value)} value={selectedEffortId ?? efforts[0].id}>{efforts.map(effort => <option key={effort.id} value={effort.id}>{effort.label}</option>)}</UiSelect></label>}</div></header>
+      {headerContent && <div className="ui-kit-ai-chat__extension">{headerContent}</div>}
       <div aria-label="Messages" aria-live="polite" className="ui-kit-ai-chat__transcript" onScroll={event => { const node = event.currentTarget; nearBottom.current = node.scrollHeight - node.scrollTop - node.clientHeight < 100; setShowJump(!nearBottom.current) }} ref={transcript} role="log">
         {messages.length === 0 ? <div className="ui-kit-ai-chat__welcome"><span className="ui-kit-ai-chat__welcome-mark"><UiBootstrapIcon name="stars" /></span><h2>{title}</h2><p>{description}</p>{suggestions.length > 0 && <div className="ui-kit-ai-chat__suggestions">{suggestions.map(prompt => <button disabled={disabled || isGenerating} key={prompt} onClick={() => { setDraft(prompt); textInput.current?.focus() }} type="button">{prompt}<UiBootstrapIcon name="arrow-up-right" /></button>)}</div>}</div> : messages.map(message => <article aria-label={message.role === 'user' ? 'Your message' : message.role === 'assistant' ? 'Assistant response' : 'System message'} className={`ui-kit-ai-chat__message ui-kit-ai-chat__message--${message.role}`} key={message.id}>
           <span aria-hidden="true" className="ui-kit-ai-chat__avatar"><UiBootstrapIcon name={message.role === 'user' ? 'person-fill' : message.role === 'assistant' ? 'stars' : 'info-circle'} /></span>
@@ -184,17 +214,18 @@ export function UiAiChat({
             {editingId === message.id ? <form className="ui-kit-ai-chat__edit" onSubmit={event => { event.preventDefault(); const text = editingText.trim(); if (text) onEditMessage?.(message.id, text); setEditingId(null) }}><textarea aria-label="Edit message" autoFocus onChange={event => setEditingText(event.target.value)} value={editingText} /><div><UiButton onClick={() => setEditingId(null)} type="button">Cancel</UiButton><UiButton type="submit" variant="primary">Save and resend</UiButton></div></form> : <div className="ui-kit-ai-chat__markdown"><ReactMarkdown components={{ a: ({children, ...props}) => <a {...props} rel="noopener noreferrer" target="_blank">{children}</a>, pre: ({children}) => <AiCodeBlock copiedId={copiedId} onCopy={copy}>{children}</AiCodeBlock> }} remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>{message.status === 'streaming' && <span aria-label="Generating" className="ui-kit-ai-chat__cursor" />}{message.status === 'error' && <p className="ui-kit-ai-chat__message-error">Response interrupted.</p>}</div>}
             {message.attachments && message.attachments.length > 0 && <div className="ui-kit-ai-chat__attachments">{message.attachments.map(file => file.url ? <a href={file.url} key={file.id} rel="noopener noreferrer" target="_blank"><UiBootstrapIcon name="paperclip" /><span>{file.name}</span>{file.size && <small>{file.size}</small>}</a> : <span className="ui-kit-ai-chat__attachment" key={file.id}><UiBootstrapIcon name="paperclip" />{file.name}{file.size && <small>{file.size}</small>}</span>)}</div>}
             {message.sources && message.sources.length > 0 && <div className="ui-kit-ai-chat__sources"><strong>Sources</strong>{message.sources.map((source, index) => <a href={source.url} key={source.id} rel="noopener noreferrer" target="_blank"><span>{index + 1}</span>{source.title}<UiBootstrapIcon name="box-arrow-up-right" /></a>)}</div>}
+            {message.activity && <UiExecutionLog entries={message.activity} label="Message activity" />}
             {editingId !== message.id && message.content && <div aria-label="Message actions" className="ui-kit-ai-chat__message-actions"><AiAction label={copiedId === message.id ? 'Copied' : 'Copy message'} onClick={() => copy(message.id, message.content)} icon={copiedId === message.id ? 'check-lg' : 'copy'} />{message.role === 'user' && onEditMessage && <AiAction label="Edit message" onClick={() => { setEditingId(message.id); setEditingText(message.content) }} icon="pencil" />}{message.role === 'assistant' && <>{onRegenerate && <AiAction label="Regenerate response" onClick={() => onRegenerate(message.id)} icon="arrow-clockwise" disabled={isGenerating} />}{onFeedback && <><AiAction label="Good response" onClick={() => onFeedback(message.id, 'positive')} icon="hand-thumbs-up" active={message.feedback === 'positive'} /><AiAction label="Bad response" onClick={() => onFeedback(message.id, 'negative')} icon="hand-thumbs-down" active={message.feedback === 'negative'} /></>}</>}</div>}
           </div>
         </article>)}
         {isGenerating && latestMessage?.status !== 'streaming' && <div aria-label="Assistant is thinking" className="ui-kit-ai-chat__thinking"><UiBootstrapIcon name="stars" /><span /><span /><span /></div>}
       </div>
       {showJump && <button className="ui-kit-ai-chat__jump" onClick={() => { if (transcript.current) transcript.current.scrollTop = transcript.current.scrollHeight; nearBottom.current = true; setShowJump(false) }} type="button"><UiBootstrapIcon name="arrow-down" /> Latest message</button>}
-      <div className="ui-kit-ai-chat__composer-wrap">{error && <div className="ui-kit-ai-chat__error" role="alert"><UiBootstrapIcon name="exclamation-triangle" />{error}</div>}{dragging && <div className="ui-kit-ai-chat__drop-hint">Drop files to attach</div>}
+      <div className="ui-kit-ai-chat__composer-wrap">{beforeComposer && <div className="ui-kit-ai-chat__before-composer">{beforeComposer}</div>}{(error || sendError) && <div className="ui-kit-ai-chat__error" role="alert"><UiBootstrapIcon name="exclamation-triangle" />{error || sendError}</div>}{dragging && <div className="ui-kit-ai-chat__drop-hint">Drop files to attach</div>}
         <form className="ui-kit-ai-chat__composer" onSubmit={submit}><input accept={accept} aria-label="Attach files" className="ui-kit-ai-chat__sr-only" id={`${id}-files`} multiple onChange={event => { if (event.target.files) appendFiles(event.target.files); event.target.value = '' }} ref={fileInput} type="file" />
           {files.length > 0 && <div className="ui-kit-ai-chat__pending-files">{files.map((file, index) => <span key={`${file.name}-${index}`}><UiBootstrapIcon name="file-earmark" />{file.name}<button aria-label={`Remove ${file.name}`} onClick={() => setFiles(current => current.filter((_, itemIndex) => itemIndex !== index))} type="button"><UiBootstrapIcon name="x-lg" /></button></span>)}</div>}
           <textarea aria-label="Message" disabled={disabled} onChange={event => setDraft(event.target.value)} onKeyDown={handleComposerKey} onPaste={event => { if (event.clipboardData.files.length) { appendFiles(event.clipboardData.files); if (!event.clipboardData.getData('text/plain')) event.preventDefault() } }} placeholder="Ask anything…" ref={textInput} rows={2} value={draft} />
-          <div className="ui-kit-ai-chat__composer-actions"><div><button aria-label="Attach files" disabled={disabled || files.length >= maxFiles} onClick={() => fileInput.current?.click()} title="Attach files" type="button"><UiBootstrapIcon name="paperclip" /></button><span>{files.length > 0 ? `${files.length}/${maxFiles} files` : 'Enter to send · Shift+Enter for a new line'}</span></div>{isGenerating ? <UiButton onClick={onStop} type="button" disabled={!onStop}><UiBootstrapIcon name="stop-fill" /> Stop</UiButton> : <UiButton disabled={disabled || (!draft.trim() && files.length === 0)} type="submit" variant="primary"><UiBootstrapIcon name="arrow-up" /> Send</UiButton>}</div>
+          <div className="ui-kit-ai-chat__composer-actions"><div><button aria-label="Attach files" disabled={disabled || files.length >= maxFiles} onClick={() => fileInput.current?.click()} title="Attach files" type="button"><UiBootstrapIcon name="paperclip" /></button>{composerActions}<span>{files.length > 0 ? `${files.length}/${maxFiles} files` : 'Enter to send · Shift+Enter for a new line'}</span></div>{isGenerating ? <UiButton onClick={onStop} type="button" disabled={!onStop}><UiBootstrapIcon name="stop-fill" /> Stop</UiButton> : <UiButton disabled={disabled || sending || (!draft.trim() && files.length === 0)} type="submit" variant="primary"><UiBootstrapIcon name="arrow-up" /> {sending ? 'Sending…' : 'Send'}</UiButton>}</div>
         </form><p className="ui-kit-ai-chat__disclaimer">AI can make mistakes. Review important information.</p>
       </div>
     </div>

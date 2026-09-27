@@ -34,3 +34,7 @@ The host should append the user message when `onSend` runs, then append an assis
 The file picker, drag and drop, and clipboard paste provide `File` objects through `onSend`. The host validates, uploads and stores them. For existing files, provide `attachments` with a URL. Provide source links through `sources`; URLs are rendered as external links. Markdown uses `react-markdown` and `remark-gfm`; raw HTML is not enabled. Avoid placing secrets in message text.
 
 Optional callbacks reveal their corresponding actions: `onRegenerate`, `onEditMessage`, `onFeedback`, `onRenameConversation`, `onDeleteConversation`, `onModelChange`, and `onEffortChange`. Model and effort are independent controlled choices using the same `UiSelect` geometry as other Kit forms; the host maps them to provider-specific request parameters. The component also includes history search, a keyboard-contained mobile history drawer, code/message copying, a latest-message jump, keyboard send, empty-state suggestions and accessible loading feedback. Labels are English in the public kit; a future localization prop can be added if a consumer needs another language.
+
+## Embedded agent sessions
+
+See [workspace integration](workspace.md#ai-chat-extensions) for `showHistory`, extension slots, controlled drafts, structured message activity and asynchronous `onSend`. Returning a rejected promise keeps text and attachments available for retry. Return success only after the host accepts the message.

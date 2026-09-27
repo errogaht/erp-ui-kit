@@ -1,3 +1,4 @@
+import { useUiDocumentActive } from './document-activity'
 import { useEffect, useId, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { UiBootstrapIcon } from './UiBootstrapIcon'
@@ -11,7 +12,10 @@ type InformationTone = 'neutral' | 'accent' | 'success' | 'warning' | 'danger'
  * outside pointer press close it; the trigger remains usable by keyboard.
  */
 export function UiInfoTip({ label, children }: { label: string; children: ReactNode }) {
-  const [open, setOpen] = useState(false)
+  // Portals and document-level handlers must follow retained tab activity.
+  const active = useUiDocumentActive()
+  const [requestedOpen, setOpen] = useState(false)
+  const open = requestedOpen && active
   const id = useId()
   const root = useRef<HTMLSpanElement>(null)
   const trigger = useRef<HTMLButtonElement>(null)
