@@ -498,6 +498,7 @@ export function DocumentExamples() {
 
 /** Operations compose synthetic filters, pipeline cards and notifications. */
 export function OperationExamples() {
+  const [dragEnabled, setDragEnabled] = useState(true)
   const [query, setQuery] = useState(''),
     [search, setSearch] = useState(''),
     [command, setCommand] = useState(false),
@@ -624,7 +625,10 @@ export function OperationExamples() {
           )}
         </UiField>
       </UiFilterBar>
+      <label><input type="checkbox" checked={dragEnabled} onChange={event => setDragEnabled(event.target.checked)} /> Enable drag and drop</label>
       <UiBoard
+        dragAndDrop={dragEnabled}
+        onMove={({ itemId, toColumnId }) => setCards(previous => previous.map(item => item.id === itemId ? { ...item, stage: toColumnId } : item))}
         label="Dispatch pipeline"
         columns={[
           { id: 'intake', title: 'Intake' },
@@ -636,28 +640,12 @@ export function OperationExamples() {
             .filter((card) => card.stage === stage.id)
             .map((card) => ({
               id: card.id,
+              label: card.title,
               content: (
                 <UiStack>
                   <strong>{card.title}</strong>
                   <UiBadge>{card.team === 'north' ? 'North team' : 'West team'}</UiBadge>
-                  <label>
-                    Move to
-                    <UiSelect
-                      aria-label={`Stage for ${card.title}`}
-                      value={card.stage}
-                      onChange={(event) =>
-                        setCards((previous) =>
-                          previous.map((item) =>
-                            item.id === card.id ? { ...item, stage: event.target.value } : item,
-                          ),
-                        )
-                      }
-                    >
-                      <option value="intake">Intake</option>
-                      <option value="review">In review</option>
-                      <option value="ready">Ready</option>
-                    </UiSelect>
-                  </label>
+
                 </UiStack>
               ),
             })),

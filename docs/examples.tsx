@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import {
+  UiToaster, uiToast,
   UiActionTile, UiAiChat, UiAsidePanel, UiAsyncCombobox, UiAttachmentLink, UiAvatar,
   UiBadge, UiBootstrapIcon, UiButton, UiCard, UiCell, UiChangeList, UiChangeRow, UiChoice,
   UiCombobox, UiComparison, UiComposer, UiContainer, UiConversationCanvas,
@@ -275,3 +276,24 @@ export function AdminPatterns() {
 }
 
 function Example({title,names,children}:{title:string;names:string;children:React.ReactNode}) {return <div className="catalog-example"><header><strong>{title}</strong><code>{names}</code></header><div className="catalog-example__body">{children}</div></div>}
+
+
+/** One catalog notification host exercises all positions and common event types. */
+export function ToastExamples() {
+  const [position, setPosition] = useState<import('../src').UiToastPosition>('bottom-right')
+  return <UiStack>
+    {/* Reserve the bottom edge for the catalog feedback toolbar. */}
+    <UiToaster id="catalog-toasts" position={position} offset={{ bottom: 80, top: 24, left: 24, right: 24 }} mobileOffset={{ bottom: 80, top: 16, left: 16, right: 16 }} />
+    <UiField label="Toast position">{bindings => <UiSelect id={bindings.id} aria-label="Toast position" value={position} onChange={event => setPosition(event.target.value as typeof position)}>
+      {(['top-left', 'top-center', 'top-right', 'bottom-left', 'bottom-center', 'bottom-right'] as const).map(value => <option key={value} value={value}>{value}</option>)}
+    </UiSelect>}</UiField>
+    <UiInline>
+      <UiButton onClick={() => uiToast.success('Dispatch saved', { toasterId: 'catalog-toasts', description: 'The schedule is ready for review.' })}>Success toast</UiButton>
+      <UiButton onClick={() => uiToast.info('New assignment', { toasterId: 'catalog-toasts', description: 'A routing check is waiting.' })}>Info toast</UiButton>
+      <UiButton onClick={() => uiToast.warning('Capacity is nearly full', { toasterId: 'catalog-toasts' })}>Warning toast</UiButton>
+      <UiButton onClick={() => uiToast.error('Export failed', { toasterId: 'catalog-toasts', description: 'Try again after reviewing the inputs.' })}>Error toast</UiButton>
+      <UiButton onClick={() => uiToast('Item archived', { toasterId: 'catalog-toasts', action: { label: 'Undo', onClick: () => uiToast.success('Item restored', { toasterId: 'catalog-toasts' }) } })}>Action toast</UiButton>
+      <UiButton onClick={() => uiToast.promise(new Promise(resolve => setTimeout(resolve, 1200)), { toasterId: 'catalog-toasts', loading: 'Preparing export…', success: 'Export ready', error: 'Export failed' })}>Async toast</UiButton>
+    </UiInline>
+  </UiStack>
+}

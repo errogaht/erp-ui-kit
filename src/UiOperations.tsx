@@ -440,52 +440,76 @@ export function UiScheduleEditor({
   )
 }
 
-/** Generic board for pipelines and queues; cards and move controls are supplied
- * by the host. A native select/action is the accessible alternative to dragging. */
-export function UiBoard({
-  label,
-  columns,
-  empty = 'No items.',
-}: {
+export type UiBoardColumn = {
+  id: string
+  title: string
+  count?: number
+  description?: string
+  actions?: ReactNode
+  items: readonly { id: string; content: ReactNode; label?: string }[]
+}
+export type UiBoardMove = { itemId: string; fromColumnId: string; toColumnId: string }
+
+/** Controlled cross-column moves: the host persists and supplies the new columns.
+ * Dragging requires a callback and can be disabled independently of accessible
+ * move selects. IDs must be unique within this board; foreign drags are ignored. */
+export function UiBoard({ label, columns, empty = 'No items.', onMove, dragAndDrop = true }: {
   label: string
-  columns: readonly {
-    id: string
-    title: string
-    count?: number
-    description?: string
-    actions?: ReactNode
-    items: readonly { id: string; content: ReactNode }[]
-  }[]
+  columns: readonly UiBoardColumn[]
   empty?: ReactNode
+  onMove?: (move: UiBoardMove) => void
+  dragAndDrop?: boolean
 }) {
   const base = useId()
-  return (
-    <div className="ui-kit-board" role="region" aria-label={label} tabIndex={0}>
-      {columns.map((column) => (
-        <section
-          className="ui-kit-board__column"
-          key={column.id}
-          aria-labelledby={`${base}-${encodeURIComponent(column.id)}`}
-        >
-          <header>
-            <strong id={`${base}-${encodeURIComponent(column.id)}`}>{column.title}</strong>
-            <UiBadge>{column.count ?? column.items.length}</UiBadge>
-            {column.actions}
-          </header>
-          {column.description && <p>{column.description}</p>}
-          <div className="ui-kit-board__items">
-            {column.items.length ? (
-              column.items.map((item) => (
-                <div key={item.id} className="ui-kit-board__card">
-                  {item.content}
-                </div>
-              ))
-            ) : (
-              <p className="ui-kit-board__empty">{empty}</p>
-            )}
-          </div>
-        </section>
-      ))}
-    </div>
-  )
+  const dragged = useRef<{ itemId: string; fromColumnId: string } | null>(null)
+  const [over, setOver] = useState<string | null>(null)
+  const [announcement, setAnnouncement] = useState('')
+  const canDrag = dragAndDrop && Boolean(onMove)
+  const resetDrag = () => { dragged.current = null; setOver(null) }
+  useEffect(() => { if (!canDrag) resetDrag() }, [canDrag])
+  const move = (itemId: string, fromColumnId: string, toColumnId: string) => {
+    const source = columns.find(column => column.id === fromColumnId)
+    const target = columns.find(column => column.id === toColumnId)
+    const item = source?.items.find(item => item.id === itemId)
+    if (!onMove || !item || !target || fromColumnId === toColumnId) return
+    onMove({ itemId, fromColumnId, toColumnId })
+    setAnnouncement(`Move requested: ${item.label ?? item.id} to ${target.title}.`)
+  }
+  return <div className="ui-kit-board" role="region" aria-label={label} tabIndex={0}>
+    <span className="ui-kit-operations-sr" role="status">{announcement}</span>
+    {columns.map(column => <section
+      className={`ui-kit-board__column${over === column.id ? ' ui-kit-board__column--drop' : ''}`}
+      key={column.id} aria-labelledby={`${base}-${encodeURIComponent(column.id)}`}
+      onDragOver={event => {
+        if (!canDrag || !dragged.current || dragged.current.fromColumnId === column.id) return
+        event.preventDefault(); event.dataTransfer.dropEffect = 'move'; setOver(column.id)
+      }}
+      onDragLeave={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setOver(null) }}
+      onDrop={event => {
+        if (!canDrag || !dragged.current) return
+        event.preventDefault()
+        move(dragged.current.itemId, dragged.current.fromColumnId, column.id)
+        resetDrag()
+      }}>
+      <header><strong id={`${base}-${encodeURIComponent(column.id)}`}>{column.title}</strong><UiBadge>{column.count ?? column.items.length}</UiBadge>{column.actions}</header>
+      {column.description && <p>{column.description}</p>}
+      <div className="ui-kit-board__items">
+        {column.items.length ? column.items.map(item => <div key={item.id} className="ui-kit-board__card">
+          {canDrag && <span className="ui-kit-board__drag" draggable role="img" aria-label={`Drag ${item.label ?? item.id}`} title="Drag to another column; or use Move to below"
+            onDragStart={event => {
+              dragged.current = { itemId: item.id, fromColumnId: column.id }
+              event.dataTransfer.effectAllowed = 'move'
+              event.dataTransfer.setData('text/plain', item.id)
+            }} onDragEnd={resetDrag}><UiBootstrapIcon name="grip-vertical" /> Drag</span>}
+          {item.content}
+          {onMove && <label className="ui-kit-board__move">Move to
+            <UiSelect aria-label={`Move ${item.label ?? item.id} to column`} density="compact" value={column.id}
+              onChange={event => move(item.id, column.id, event.target.value)}>
+              {columns.map(target => <option key={target.id} value={target.id}>{target.title}</option>)}
+            </UiSelect>
+          </label>}
+        </div>) : <p className="ui-kit-board__empty">{empty}</p>}
+      </div>
+    </section>)}
+  </div>
 }

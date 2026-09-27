@@ -115,5 +115,8 @@
     "UiNotificationList",
     "UiScheduleEditor",
     "UiBoard"
+  ],
+  "Toasts": [
+    "UiToaster"
   ]
 }

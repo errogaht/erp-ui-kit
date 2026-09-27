@@ -338,3 +338,9 @@
 
 /* The group provides the focus ring; avoid a second inset ring on its input. */
 .ui-kit-surface .ui-kit-command__search input:focus-visible { outline: none; box-shadow: none; }
+
+/* Only the grip initiates a drag, preserving text selection and card actions. */
+.ui-kit-board__drag { display:flex; align-items:center; gap:4px; width:fit-content; margin-bottom:8px; color:var(--ui-kit-muted); cursor:grab; font-size:10px; }
+.ui-kit-board__drag:active { cursor:grabbing; }
+.ui-kit-board__column--drop { outline:2px solid var(--ui-kit-accent); outline-offset:-2px; background:var(--ui-kit-accent-soft); }
+.ui-kit-board__move { display:grid; gap:4px; margin-top:12px; color:var(--ui-kit-muted); font-size:10px; }
