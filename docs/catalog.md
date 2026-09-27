@@ -42,3 +42,7 @@ The [admin CRUD template](admin-patterns.md) composes fields, navigation and a c
 The task tracker has a [live list and detail demo](https://errogaht.github.io/erp-ui-kit/#tasks) and a [data and integration guide](tasks.md). The host supplies task records and persists patches/comments. `UiRichTextEditor` returns Tiptap JSON; both read-only comments and editing use the same document renderer.
 
 See the [workspace integration guide](workspace.md) for retained-document activity, AI-chat extension slots, asynchronous send recovery and host boundaries. The exported `useUiDocumentActive()` hook is nonvisual and is not included in the component count.
+
+## Visual feedback
+
+The desktop catalog includes [Agentation](https://www.agentation.com/). Open its toolbar in the bottom-right corner, select an element, add a note, and copy the feedback into your agent conversation. Notes stay in your browser; no MCP endpoint or webhook is configured. All section anchors share the same feedback collection. Global Agentation shortcuts are disabled to preserve the interactive examples' keyboard behavior. This integration belongs to the docs site only and is not exported by the UI library.
