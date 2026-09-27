@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.8.0
+## 0.9.0 — 2026-09-27
 
 - Add `UiToaster` and `uiToast`, styled Sonner notifications with six positions, actions and async states.
 - Add controlled cross-column `UiBoard` moves, an optional drag handle and keyboard/touch move controls. Static boards remain unchanged without `onMove`.
@@ -8,6 +8,16 @@
 - Simplify info triggers to a single circle glyph and space the icon gallery's status examples.
 - Preserve the 0.7.1 agent chat layout fixes.
 
+
+## 0.8.0 — 2026-09-27
+
+### Added
+
+- `UiAgentQuestions`: required question groups with preset or custom answers, progress, atomic asynchronous submission, retry and completed states.
+- `UiAiChatMessage.contentAfter` for interactive message content in the scrollable transcript.
+- Interactive question-group demo, mobile layout and keyboard/transport regression coverage. Catalog now contains 89 components.
+
+Existing chat APIs remain compatible. Question transport and persistence belong to the consumer.
 
 ## 0.7.1 — 2026-09-27
 

@@ -101,7 +101,8 @@
     "UiExecutionLog",
     "UiPromptActions",
     "UiApprovalCard",
-    "UiVoiceControl"
+    "UiVoiceControl",
+    "UiAgentQuestions"
   ],
   "Documents and changes": [
     "UiMarkdown",

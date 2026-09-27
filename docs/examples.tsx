@@ -282,7 +282,8 @@ function Example({title,names,children}:{title:string;names:string;children:Reac
 export function ToastExamples() {
   const [position, setPosition] = useState<import('../src').UiToastPosition>('bottom-right')
   return <UiStack>
-    <UiToaster id="catalog-toasts" position={position} />
+    {/* Reserve the bottom edge for the catalog feedback toolbar. */}
+    <UiToaster id="catalog-toasts" position={position} offset={{ bottom: 80, top: 24, left: 24, right: 24 }} mobileOffset={{ bottom: 80, top: 16, left: 16, right: 16 }} />
     <UiField label="Toast position">{bindings => <UiSelect id={bindings.id} aria-label="Toast position" value={position} onChange={event => setPosition(event.target.value as typeof position)}>
       {(['top-left', 'top-center', 'top-right', 'bottom-left', 'bottom-center', 'bottom-right'] as const).map(value => <option key={value} value={value}>{value}</option>)}
     </UiSelect>}</UiField>

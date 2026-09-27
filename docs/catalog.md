@@ -5,7 +5,7 @@ Import components from `@errogaht/erp-ui-kit`. Import `@errogaht/erp-ui-kit/styl
 | Area | Exports | Use |
 | --- | --- | --- |
 | Workspace | `UiWorkspace`, `UiWorkspaceTabs`, `UiResizableSplit`, `UiTree`, `UiBreadcrumbs` | Retained documents, resizable panes and keyboard navigation. |
-| Agent activity | `UiExecutionLog`, `UiPromptActions`, `UiApprovalCard`, `UiVoiceControl` | Inspectable execution, presets, decisions and recording states. |
+| Agent activity | `UiExecutionLog`, `UiPromptActions`, `UiApprovalCard`, `UiVoiceControl`, `UiAgentQuestions` | Inspectable execution, presets, decisions and recording states. |
 | Documents | `UiMarkdown`, `UiMarkdownEditor`, `UiCodeDiff` | Plain Markdown and structured split/unified code changes. |
 | Operations | `UiCommandPalette`, `UiFilterBar`, `UiNotificationList`, `UiScheduleEditor`, `UiBoard` | Search, saved views, notifications, recurrence input and generic pipelines. |
 | Layout | `UiContainer`, `UiGrid`, `UiCell`, `UiStack`, `UiInline`, `UiSplit` | Responsive page and card composition. |
@@ -60,3 +60,7 @@ uiToast.success('Dispatch saved', { description: 'Ready for review.' })
 ## Board movement
 
 `UiBoard` is controlled. Supply `onMove({ itemId, fromColumnId, toColumnId })` and update `columns` when the host accepts a move. Each item can supply `label` for accessible movement controls. Item and column IDs must be unique within the board. Cross-column dragging starts from the grip; card inputs and actions retain their normal behavior. `dragAndDrop={false}` hides the grip while keeping the keyboard/touch move selects. Omitting `onMove` keeps a static board with no movement controls. Same-column and foreign drops are ignored; ordering within a column is not changed by this API. The host owns validation, persistence and errors.
+
+## Grouped agent questions
+
+`UiAgentQuestions` collects one preset or custom answer per question and submits the complete group once. All questions are required; no answer is preselected. Rejected submissions retain drafts, successful submissions lock the group. Change `requestId` when replacing questions. The host owns persistence and transport. Place the card in `UiAiChatMessage.contentAfter` to keep long forms in the scrollable transcript.

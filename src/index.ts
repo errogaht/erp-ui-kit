@@ -24,3 +24,5 @@ export * from './UiDocuments'
 export * from './UiAgentActivity'
 export * from './UiOperations'
 export * from './UiToaster'
+
+export * from './UiAgentQuestions'

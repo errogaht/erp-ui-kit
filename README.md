@@ -9,7 +9,7 @@ A compact React component library for operational and ERP interfaces. The librar
 Install a pinned GitHub release:
 
 ```sh
-npm install github:errogaht/erp-ui-kit#v0.8.0
+npm install github:errogaht/erp-ui-kit#v0.9.0
 ```
 
 Import the package and its CSS once in the host app:
@@ -35,7 +35,7 @@ Native inputs and selects and both searchable comboboxes have the same regular a
 
 ## Workspace extensions
 
-The kit now includes 88 components. Retained document tabs, resizable panels, tree navigation, execution cards, approval controls, Markdown, code diffs, global search, notifications, schedules and generic boards support complete operational workspaces. [Explore the examples](https://errogaht.github.io/erp-ui-kit/#workspace) and read the [integration guide](docs/workspace.md). Existing simple tabs and consumer APIs remain available.
+The kit now includes 89 components. Retained document tabs, resizable panels, tree navigation, execution cards, approval controls, Markdown, code diffs, global search, notifications, schedules and generic boards support complete operational workspaces. [Explore the examples](https://errogaht.github.io/erp-ui-kit/#workspace) and read the [integration guide](docs/workspace.md). Existing simple tabs and consumer APIs remain available.
 
 ## Bootstrap Icons
 
