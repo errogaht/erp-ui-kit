@@ -1,5 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { Agentation } from 'agentation'
 import groups from './catalog.json'
 import { AdminPatterns, AiChatExamples, AuditHistory, ChatWorkspace, FormsAndActions, InformationExamples, LayoutAndRecords, StatesAndNavigation, TaskTrackerExamples } from './examples'
 import { WorkspaceExamples, AgentWorkspaceExamples, DocumentExamples, OperationExamples } from './workspace-examples'
@@ -51,4 +52,12 @@ function Catalog() {
 
 function SectionHeader({number,title,detail}:{number:string;title:string;detail:string}) {return <div className="site-section-header"><span>{number} / COMPONENTS</span><h2>{title}</h2><p>{detail}</p></div>}
 
-createRoot(document.getElementById('root')!).render(<StrictMode><Catalog/></StrictMode>)
+// Enable feedback on the published catalog as well as local previews. Keep this
+// docs-only: consumers must never inherit the toolbar or a feedback endpoint.
+// Section hashes are anchors on one page, so annotations share one local bucket.
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <Catalog/>
+    <Agentation appName="ERP UI Kit catalog" enableKeyboardShortcuts={false}/>
+  </StrictMode>,
+)
