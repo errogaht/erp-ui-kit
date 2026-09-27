@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.0
+
+- Add `UiToaster` and `uiToast`, styled Sonner notifications with six positions, actions and async states.
+- Add controlled cross-column `UiBoard` moves, an optional drag handle and keyboard/touch move controls. Static boards remain unchanged without `onMove`.
+- Use status badges in task filter and bulk menus; align task kind icons with row selection.
+- Simplify info triggers to a single circle glyph and space the icon gallery's status examples.
+- Preserve the 0.7.1 agent chat layout fixes.
+
+
 ## 0.7.1 — 2026-09-27
 
 ### Fixed

@@ -1,0 +1,23 @@
+/* Keep Sonner's placement, animation and accessible interactions; scope all
+ * appearance overrides to our toaster so another host's Sonner stays untouched. */
+.ui-kit-toaster [data-sonner-toast].ui-kit-toast {
+  font:12px/1.45 Inter,system-ui,sans-serif;
+  border-radius:var(--ui-kit-radius);
+  border:1px solid var(--ui-kit-line);
+  background:var(--ui-kit-panel);
+  color:var(--ui-kit-ink);
+  padding:14px 16px;
+  gap:10px;
+  box-shadow:0 8px 24px #22323b24;
+}
+.ui-kit-toaster .ui-kit-toast [data-title] { font-weight:700; }
+.ui-kit-toaster .ui-kit-toast [data-description] { color:var(--ui-kit-muted); }
+.ui-kit-toaster .ui-kit-toast[data-type='success'] { border-left:3px solid #2e7051; }
+.ui-kit-toaster .ui-kit-toast[data-type='info'] { border-left:3px solid var(--ui-kit-accent); }
+.ui-kit-toaster .ui-kit-toast[data-type='warning'] { border-left:3px solid #a87713; }
+.ui-kit-toaster .ui-kit-toast[data-type='error'] { border-left:3px solid #a33d32; }
+.ui-kit-toaster .ui-kit-toast[data-type='success'] [data-icon] { color:#2e7051; }
+.ui-kit-toaster .ui-kit-toast[data-type='warning'] [data-icon] { color:#a87713; }
+.ui-kit-toaster .ui-kit-toast[data-type='error'] [data-icon] { color:#a33d32; }
+.ui-kit-toaster .ui-kit-toast [data-button] { border-radius:var(--ui-kit-radius); background:var(--ui-kit-accent); color:#fff; font:inherit; }
+.ui-kit-toaster .ui-kit-toast [data-close-button] { border-radius:var(--ui-kit-radius); color:var(--ui-kit-muted); background:var(--ui-kit-panel); border-color:var(--ui-kit-line); }

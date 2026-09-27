@@ -47,6 +47,8 @@ export function UiBadgeSelect({ options, value, onChange, label = 'Status', disa
   }, [open])
   const choose = (next: string) => { onChange(next); setOpen(false); root.current?.querySelector('button')?.focus() }
   const keyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    // Portaled menu events also bubble through the React root; handle a key once.
+    if (['Escape', 'ArrowDown', 'ArrowUp', 'Home', 'End', 'Enter', ' '].includes(event.key)) event.stopPropagation()
     if (event.key === 'Escape') { setOpen(false); root.current?.querySelector('button')?.focus(); return }
     if (!['ArrowDown', 'ArrowUp', 'Home', 'End', 'Enter', ' '].includes(event.key)) return
     if ((event.key === 'Enter' || event.key === ' ') && !open) { event.preventDefault(); setOpen(true); return }

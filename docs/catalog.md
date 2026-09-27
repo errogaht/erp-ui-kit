@@ -12,7 +12,7 @@ Import components from `@errogaht/erp-ui-kit`. Import `@errogaht/erp-ui-kit/styl
 | Actions | `UiButton`, `UiLinkButton`, `UiIconButton`, `UiActionTile`, `UiFormActionRow` | Native actions and aligned field actions. |
 | Forms | `UiField`, `UiInput`, `UiSelect`, `UiTextarea`, `UiChoice`, `UiCombobox`, `UiAsyncCombobox`, `UiBadgeSelect` | Labels, validation, native controls and searchable selectors. |
 | Navigation | `UiSegmented`, `UiTabs`, `UiPagination`, `UiPopoverMenu`, `UiDisclosure`, `UiSidebarNav`, `UiTopNav` | View switching and disclosure. |
-| Feedback | `UiBadge`, `UiNotice`, `UiProgress`, `UiSkeleton`, `UiEmpty`, `UiHelp`, `UiDialog` | State and guidance. |
+| Feedback | `UiToaster`, `UiBadge`, `UiNotice`, `UiProgress`, `UiSkeleton`, `UiEmpty`, `UiHelp`, `UiDialog` | State and guidance. |
 | Information | `UiInfoTip`, `UiCallout`, `UiEmptyState`, `UiSectionHeading` | Clickable contextual help, explanatory blocks, actionable empty states, and section titles. |
 | Records | `UiCard`, `UiPanel`, `UiAsidePanel`, `UiMetric`, `UiFacts`, `UiTable`, `UiItemRow`, `UiLineItem`, `UiValueCard`, `UiFile`, `UiTimeline`, `UiPhotoUpload`, `UiAvatarUpload` | Data and record structure. |
 | Inbox | `UiInboxCard`, `UiMessage`, `UiComposer`, `UiReplySettings`, `UiConversationCanvas`, `UiQuote`, `UiAttachmentLink`, `UiImagePreview`, `UiStatusLine`, `UiAvatar` | Conversations and message history. |
@@ -46,3 +46,17 @@ See the [workspace integration guide](workspace.md) for retained-document activi
 ## Visual feedback
 
 The desktop catalog includes [Agentation](https://www.agentation.com/). Open its toolbar in the bottom-right corner, select an element, add a note, and copy the feedback into your agent conversation. Notes stay in your browser; no MCP endpoint or webhook is configured. All section anchors share the same feedback collection. Global Agentation shortcuts are disabled to preserve the interactive examples' keyboard behavior. This integration belongs to the docs site only and is not exported by the UI library.
+
+## Toast notifications
+
+Mount `UiToaster` once at the application root, outside retained document panels, and use `uiToast.success`, `.info`, `.warning`, `.error`, `.loading`, `.promise` or `uiToast(message)`. The [live toast examples](https://errogaht.github.io/erp-ui-kit/#toasts) cover all six `position` values: `top-left`, `top-center`, `top-right`, `bottom-left`, `bottom-center`, `bottom-right`. Sonner handles stacking, dismissal, announcements and timers; UI Kit provides scoped visual styling. Optional actions, descriptions, duration, visible count and per-toast position overrides use the Sonner API. To target multiple hosts, pair `UiToaster id` with the toast's `toasterId`. Message contents, async work and action callbacks belong to the consuming application.
+
+```tsx
+<UiToaster position="top-right" />
+// Call from a user action or completed operation, not during render.
+uiToast.success('Dispatch saved', { description: 'Ready for review.' })
+```
+
+## Board movement
+
+`UiBoard` is controlled. Supply `onMove({ itemId, fromColumnId, toColumnId })` and update `columns` when the host accepts a move. Each item can supply `label` for accessible movement controls. Item and column IDs must be unique within the board. Cross-column dragging starts from the grip; card inputs and actions retain their normal behavior. `dragAndDrop={false}` hides the grip while keeping the keyboard/touch move selects. Omitting `onMove` keeps a static board with no movement controls. Same-column and foreign drops are ignored; ordering within a column is not changed by this API. The host owns validation, persistence and errors.
