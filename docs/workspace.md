@@ -73,3 +73,21 @@ Successful send clears only the unchanged draft and submitted files in the origi
 ## Adoption boundary
 
 The reference application was inspected to discover presentation patterns. It has not been migrated. Upgrade a consumer using a versioned dependency, integrate host adapters, and verify its real routing, stream lifecycle, permissions and persistence separately. English built-in labels follow this package's current convention; localization of all fixed strings remains future work.
+
+## Grouped agent questions
+
+Use `UiAgentQuestions` in a message's `contentAfter` slot to collect a complete
+batch before the agent continues. Each question accepts exactly one preset or a
+custom text answer. No option is selected automatically; whitespace-only custom
+answers do not count. The submit callback receives discriminated answers keyed by
+question ID, with option IDs or trimmed custom text.
+
+Keep request, question and option IDs stable and unique. Change `requestId` when
+replacing the question set. The component owns transient drafts, prevents duplicate
+submissions, retains drafts after rejection and locks the form after success.
+The consumer must persist the submitted batch and handle transport/idempotency;
+remounting the component does not restore a previously completed request.
+
+The transcript placement keeps long question groups scrollable without reducing
+the height available to the normal message composer. The form may also be used
+standalone, outside another HTML form.

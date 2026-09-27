@@ -5,7 +5,7 @@ Import components from `@errogaht/erp-ui-kit`. Import `@errogaht/erp-ui-kit/styl
 | Area | Exports | Use |
 | --- | --- | --- |
 | Workspace | `UiWorkspace`, `UiWorkspaceTabs`, `UiResizableSplit`, `UiTree`, `UiBreadcrumbs` | Retained documents, resizable panes and keyboard navigation. |
-| Agent activity | `UiExecutionLog`, `UiPromptActions`, `UiApprovalCard`, `UiVoiceControl` | Inspectable execution, presets, decisions and recording states. |
+| Agent activity | `UiExecutionLog`, `UiPromptActions`, `UiApprovalCard`, `UiVoiceControl`, `UiAgentQuestions` | Inspectable execution, presets, decisions and recording states. |
 | Documents | `UiMarkdown`, `UiMarkdownEditor`, `UiCodeDiff` | Plain Markdown and structured split/unified code changes. |
 | Operations | `UiCommandPalette`, `UiFilterBar`, `UiNotificationList`, `UiScheduleEditor`, `UiBoard` | Search, saved views, notifications, recurrence input and generic pipelines. |
 | Layout | `UiContainer`, `UiGrid`, `UiCell`, `UiStack`, `UiInline`, `UiSplit` | Responsive page and card composition. |
@@ -46,3 +46,7 @@ See the [workspace integration guide](workspace.md) for retained-document activi
 ## Visual feedback
 
 The desktop catalog includes [Agentation](https://www.agentation.com/). Open its toolbar in the bottom-right corner, select an element, add a note, and copy the feedback into your agent conversation. Notes stay in your browser; no MCP endpoint or webhook is configured. All section anchors share the same feedback collection. Global Agentation shortcuts are disabled to preserve the interactive examples' keyboard behavior. This integration belongs to the docs site only and is not exported by the UI library.
+
+### Grouped agent questions
+
+`UiAgentQuestions` collects one preset or custom answer per question and submits the complete group once. All questions are required; no answer is preselected. Rejected submissions retain drafts, successful submissions lock the group. Change `requestId` when replacing questions. The host owns persistence and transport. Place the card in `UiAiChatMessage.contentAfter` to keep long forms in the scrollable transcript.

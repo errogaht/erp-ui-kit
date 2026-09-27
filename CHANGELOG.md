@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.0 — 2026-09-27
+
+### Added
+
+- `UiAgentQuestions`: required question groups with preset or custom answers, progress, atomic asynchronous submission, retry and completed states.
+- `UiAiChatMessage.contentAfter` for interactive message content in the scrollable transcript.
+- Interactive question-group demo, mobile layout and keyboard/transport regression coverage. Catalog now contains 89 components.
+
+Existing chat APIs remain compatible. Question transport and persistence belong to the consumer.
+
 ## 0.7.1 — 2026-09-27
 
 ### Fixed

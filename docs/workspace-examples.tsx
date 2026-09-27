@@ -10,6 +10,7 @@ import {
   UiCodeDiff,
   UiExecutionLog,
   UiPromptActions,
+  UiAgentQuestions,
   UiApprovalCard,
   UiVoiceControl,
   UiCommandPalette,
@@ -438,6 +439,7 @@ export function AgentWorkspaceExamples() {
         <input type="checkbox" checked={fail} onChange={(event) => setFail(event.target.checked)} /> Simulate
         a send failure to check draft recovery
       </label>
+      <AgentQuestionExample />
       <div className="workspace-demo__two">
         <UiExecutionLog
           entries={[
@@ -701,4 +703,32 @@ export function OperationExamples() {
       />
     </UiStack>
   )
+}
+
+/** Local-only batch submission demonstrates the same card embedded in a message.
+ * Keeping it in the scrollable transcript avoids squeezing the chat composer. */
+function AgentQuestionExample() {
+  const [reply, setReply] = useState('')
+  const [request, setRequest] = useState(0)
+  const [fail, setFail] = useState(false)
+  return <UiStack>
+    <h3 id="agent-questions">Answer a group of questions</h3>
+    <UiAiChat title="Planning assistant" description="Choose a preset or write your own answer for every question."
+      showHistory={false} conversations={[]} activeConversationId="questions" onNewConversation={() => {}}
+      onSelectConversation={() => {}} onSend={text => setReply(text)}
+      messages={[{ id: 'questions', role: 'assistant', content: 'Before I prepare the operations report, please confirm these details.',
+        contentAfter: <UiAgentQuestions requestId={`report-${request}`} questions={[
+          { id: 'scope', title: 'Which queues should the report cover?', options: [
+            { id: 'all', label: 'All queues', description: 'Include every active operations team.' },
+            { id: 'priority', label: 'Priority queues', description: 'Focus on urgent requests.' }] },
+          { id: 'period', title: 'Which time period should I use?', options: [
+            { id: 'week', label: 'This week' }, { id: 'month', label: 'This month' }] }
+        ]} onSubmit={async answers => {
+          await new Promise(resolve => setTimeout(resolve, 650))
+          if (fail) throw new Error('Demo connection failed. Your answers are preserved; try again.')
+          setReply(answers.map(answer => `${answer.questionId}: ${answer.kind === 'custom' ? answer.text : answer.optionId}`).join('\n'))
+        }} /> }, ...(reply ? [{ id: 'answer', role: 'user' as const, content: reply }] : [])]} />
+    <div><UiButton onClick={() => { setRequest(value => value + 1); setReply('') }}>Start a new question group</UiButton>
+      <label><input type="checkbox" checked={fail} onChange={event => setFail(event.target.checked)} /> Simulate answer submission failure</label></div>
+  </UiStack>
 }
