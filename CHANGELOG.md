@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.7.1 — 2026-09-27
+
+### Fixed
+
+- Unified AI chat gutters and full-width messages, activity, approval and composer.
+- Compact prompt toolbar and responsive approval layout preserve more transcript space.
+- Message avatars share the author row; composer uses a single focus outline.
+- Latest-message control stays within the transcript instead of overlapping approval actions.
+- Existing public APIs remain unchanged.
+
 ## 0.7.0 — 2026-09-27
 
 ### Added

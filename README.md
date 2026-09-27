@@ -9,7 +9,7 @@ A compact React component library for operational and ERP interfaces. The librar
 Install a pinned GitHub release:
 
 ```sh
-npm install github:errogaht/erp-ui-kit#v0.7.0
+npm install github:errogaht/erp-ui-kit#v0.7.1
 ```
 
 Import the package and its CSS once in the host app:
