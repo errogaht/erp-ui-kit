@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.2 — 2026-09-28
+
+- Place toast dismissal inside the top-right corner in every screen position; reserve space so text cannot overlap the close control.
+
 ## 0.9.1 — 2026-09-27
 
 ### Improved

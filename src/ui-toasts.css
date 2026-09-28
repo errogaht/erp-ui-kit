@@ -6,7 +6,7 @@
   border:1px solid var(--ui-kit-line);
   background:var(--ui-kit-panel);
   color:var(--ui-kit-ink);
-  padding:14px 16px;
+  padding:14px 40px 14px 16px;
   gap:10px;
   box-shadow:0 8px 24px #22323b24;
 }
@@ -20,4 +20,7 @@
 .ui-kit-toaster .ui-kit-toast[data-type='warning'] [data-icon] { color:#a87713; }
 .ui-kit-toaster .ui-kit-toast[data-type='error'] [data-icon] { color:#a33d32; }
 .ui-kit-toaster .ui-kit-toast [data-button] { border-radius:var(--ui-kit-radius); background:var(--ui-kit-accent); color:#fff; font:inherit; }
-.ui-kit-toaster .ui-kit-toast [data-close-button] { border-radius:var(--ui-kit-radius); color:var(--ui-kit-muted); background:var(--ui-kit-panel); border-color:var(--ui-kit-line); }
+/* Keep dismissal inside the top-right corner in every position and direction;
+ * Extra selector specificity also survives Sonner injecting its defaults later.
+ * The reserved right padding prevents message text from running under it. */
+.ui-kit-toaster [data-sonner-toast].ui-kit-toast [data-close-button] { left:auto; right:8px; top:8px; transform:none; border-radius:var(--ui-kit-radius); color:var(--ui-kit-muted); background:var(--ui-kit-panel); border-color:var(--ui-kit-line); }
